@@ -88,10 +88,10 @@ class Mover{
 
 }
 
-var m;
-var mp = false;
-var paused = false;
-var canvas;
+let m;
+let mp = false;
+let paused = false;
+let canvas;
 
 function setup() {
 	canvas = createCanvas(windowWidth, windowHeight);
@@ -177,7 +177,7 @@ function draw() {
 
 //mov is the mover object we want to apply friction to and c is the coefficient of friction
 function friction(mov, c){
-	var f = mov.getVel();
+	let f = mov.getVel();
 	f.normalize();
 	f.mult(c);
 	mov.applyForce(f);
