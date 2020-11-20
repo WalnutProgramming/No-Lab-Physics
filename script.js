@@ -1,29 +1,21 @@
-class AABB{
-
-	constructor(){
-		this.min = createVector(0,0);
-		this.max = createVector(0,0);
-	}
-
-}
-
-function AABBvsAABB(a,b){
+function isBoxCollision(a,b){
 	if(a.max.x < b.min.x || a.min.x > b.max.x){
-		return false
+		return false;
 	}
 	if(a.max.y < b.min.y || a.min.y > b.max.y){
-		return false
+		return false;
 	}
 
-	return true
+	return true;
 }
 
-function CircleCollision(a,b){
+function isCircleCollision(a,b){
 	let r = a.radius + b.radius;
-	r *= r;
-	return r < (a.x + b.x)^2 + (a.y + b.y)^2;
-	console.log("Collision Detected");
+	return r**2 > (a.x - b.x)**2 + (a.y - b.y)**2;
 }
+
+// Change this to change the type of collision detection being used
+let areObjectsColliding = isCircleCollision;
 
 class Mover{
 
@@ -41,6 +33,22 @@ class Mover{
 		return this.vel.copy();
 	}
 
+	get x() {
+		return this.loc.x;
+	}
+
+	get y() {
+		return this.loc.y;
+	}
+
+	get radius() {
+		return this.mass * 10;
+	}
+
+	get diameter() {
+		return this.radius * 2;
+	}
+
 	//divides the force by the objects mass then adds to acceleration
 	applyForce(f){
 		let force = f.div(this.mass);
@@ -49,7 +57,6 @@ class Mover{
 
 	//updates the object's position and velocity
 	update(){
-		console.log(this.acc);
 		this.vel.add(this.acc);
 		this.loc.add(this.vel);
 		//all components of vector multiplied by 0 will become 0 (new net force on frame)
@@ -60,7 +67,7 @@ class Mover{
 	show(){
 		fill(255);
 		noStroke();
-		ellipse(this.loc.x, this.loc.y, this.mass*20, this.mass*20);
+		ellipse(this.loc.x, this.loc.y, this.diameter, this.diameter);
 	}
 
 	//makes the spheres bouncy on the edges of the window
@@ -84,6 +91,31 @@ class Mover{
 
 	}
 
+	get min() {
+		return {
+			x: this.x - this.radius,
+			y: this.y - this.radius
+		};
+	}
+
+	get max() {
+		return {
+			x: this.x + this.radius,
+			y: this.y + this.radius
+		};
+	}
+
+	getVelocityAfterCollision(other) {
+		let m1 = this.mass;
+		let m2 = other.mass;
+		let v1 = this.getVel();
+		let v2 = other.getVel();
+		// https://phys.libretexts.org/Bookshelves/University_Physics/Book%3A_Mechanics_and_Relativity_(Idema)/04%3A_Momentum/4.07%3A_Totally_Elastic_Collisions
+		return (
+			v1.mult((m1 - m2) / (m1 + m2))
+				.add(v2.mult(2 * m2 / (m1 + m2)))
+		);
+	}
 }
 
 let m;
@@ -114,6 +146,22 @@ function setup() {
  	b2.mousePressed(restart);
 }
 
+//handles collisions between objects (but not walls)
+function handleCollisions() {
+	// loop through every pair of objects
+	for (let index1 = 0; index1 < m.length; index1++) {
+		for (let index2 = index1 + 1; index2 < m.length; index2++) {
+			let object1 = m[index1];
+			let object2 = m[index2];
+			if (areObjectsColliding(object1, object2)) {
+				let object1NewVelocity = object1.getVelocityAfterCollision(object2);
+				object2.vel = object2.getVelocityAfterCollision(object1);
+				object1.vel = object1NewVelocity;
+			}
+		}
+	}
+}
+
 //loops "constantly" to apply forces and have objects draw themselves
 function draw() {
 	//allows us to essentially "pause" the draw loop by not actually doing it
@@ -142,6 +190,8 @@ function draw() {
 		e.edges();
 		e.show();
 	});
+
+	handleCollisions();
 }
 
 /* Friction
