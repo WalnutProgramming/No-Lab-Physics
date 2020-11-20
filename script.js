@@ -38,9 +38,7 @@ class Mover{
 	}
 
 	getVel(){
-		let v = createVector(0,0);
-		v.add(this.vel);
-		return v;
+		return this.vel.copy();
 	}
 
 	//divides the force by the objects mass then adds to acceleration
