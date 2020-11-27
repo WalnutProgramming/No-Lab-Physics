@@ -102,47 +102,49 @@ let isMouseBeingPressed = false;
 let paused = false;
 let canvas;
 
+const getInitialObjects = () => ([
+	new CircleMover({ loc: createVector(random(width), 0.25 * height) }),
+	new CircleMover(),
+	new BoxMover({ loc: createVector(random(width), 0.75 * height) }),
+	// floor
+	new BoxMover({ 
+		loc: createVector(width/2, height), 
+		width, 
+		height: 10,
+		hasGravity: false,
+		mass: Infinity
+	}),
+	// ceiling
+	new BoxMover({ 
+		loc: createVector(width/2, 0), 
+		width, 
+		height: 10,
+		hasGravity: false,
+		mass: Infinity
+	}),
+	// left wall
+	new BoxMover({ 
+		loc: createVector(0, height/2), 
+		height, 
+		width: 10,
+		hasGravity: false,
+		mass: Infinity
+	}),
+	// right wall
+	new BoxMover({ 
+		loc: createVector(width, height/2), 
+		height, 
+		width: 10,
+		hasGravity: false,
+		mass: Infinity
+	}),
+])
+
 function setup() {
 	canvas = createCanvas(windowWidth, windowHeight);
 	canvas.position(0,0);
 
-	allObjects = [
-		new CircleMover({ loc: createVector(random(width), 0.25 * height) }),
-		new CircleMover(),
-		new BoxMover({ loc: createVector(random(width), 0.75 * height) }),
-		// floor
-		new BoxMover({ 
-			loc: createVector(width/2, height), 
-			width, 
-			height: 10,
-			hasGravity: false,
-			mass: Infinity
-		}),
-		// ceiling
-		new BoxMover({ 
-			loc: createVector(width/2, 0), 
-			width, 
-			height: 10,
-			hasGravity: false,
-			mass: Infinity
-		}),
-		// left wall
-		new BoxMover({ 
-			loc: createVector(0, height/2), 
-			height, 
-			width: 10,
-			hasGravity: false,
-			mass: Infinity
-		}),
-		// right wall
-		new BoxMover({ 
-			loc: createVector(width, height/2), 
-			height, 
-			width: 10,
-			hasGravity: false,
-			mass: Infinity
-		}),
-	];
+	allObjects = getInitialObjects();
 
 	//buttons allow for resets and pausing
 	let b1;
@@ -259,11 +261,7 @@ function pause(){
 
 function restart(){
 	paused = false;
-	allObjects = [];
-	for(let i = 0; i < 2; i++){
-		let mov = new CircleMover();
-		allObjects.push(mov);
-	}
+	allObjects = getInitialObjects();
 }
 
 function windowResized() {
