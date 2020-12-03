@@ -1,57 +1,23 @@
-function isBoxCollision(a,b){
-	if(a.max.x < b.min.x || a.min.x > b.max.x){
-		return false;
-	}
-	if(a.max.y < b.min.y || a.min.y > b.max.y){
-		return false;
-	}
-
-	return true;
-}
-
-function isCircleCollision(a,b){
-	let r = a.radius + b.radius;
-	return r**2 > (a.x - b.x)**2 + (a.y - b.y)**2;
-}
-
-// Change this to change the type of collision detection being used
-let areObjectsColliding = isCircleCollision;
-
-class Mover{
-
-	constructor(){
-		//sets a random mass for testing purposes could have value passed in on creation if needed
-		this.mass = random(0.5,3);
-
-		//location randomized for testing and velocity and acceleration set to 0
-		this.loc = createVector(random(width),(height/2));
-		this.vel = createVector(0,0);
-		this.acc = createVector(0,0);
-	}
-
-	getVel(){
-		return this.vel.copy();
-	}
-
-	get x() {
-		return this.loc.x;
-	}
-
-	get y() {
-		return this.loc.y;
-	}
-
-	get radius() {
-		return this.mass * 10;
-	}
-
-	get diameter() {
-		return this.radius * 2;
+class Mover {
+	constructor({ 
+		mass = random(0.5, 3),
+		// location is the position of the center of mass
+		loc = createVector(random(width),(0.5*height)),
+		vel = createVector(0, 0),
+		acc = createVector(0, 0),
+		hasGravity = true
+	}) {
+		this.mass = mass;
+		this.loc = loc;
+		this.vel = vel;
+		this.acc = acc;
+		this.hasGravity = hasGravity;
 	}
 
 	//divides the force by the objects mass then adds to acceleration
 	applyForce(f){
-		let force = f.div(this.mass);
+		// Note: we use mult(1/) instead of div() because div() doesn't like dividing by Infinity
+		let force = f.mult(1 / this.mass);
 		this.acc.add(force);
 	}
 
@@ -63,32 +29,57 @@ class Mover{
 		this.acc.mult(0); 
 	}
 
+	// convenience functions
+	getVel() {
+		return this.vel.copy();
+	}
+
+	get x() {
+		return this.loc.x;
+	}
+
+	get y() {
+		return this.loc.y;
+	}
+}
+
+class BoxMover extends Mover {
+	constructor({
+		width = random(50, 100),
+		height = random(50, 100),
+		...options
+	} = {}) {
+		super(options);
+		this.width = width;
+		this.height = height;
+	}
+
+	show() {
+		fill(255);
+		noStroke();
+		rectMode(CENTER);
+		rect(this.x, this.y, this.width, this.height);
+	}
+}
+
+class CircleMover extends Mover {
+	constructor(options = {}) {
+		super(options);
+	}
+
+	get radius() {
+		return this.mass * 10;
+	}
+
+	get diameter() {
+		return this.radius * 2;
+	}
+
 	//draws the spheres on the canvas
 	show(){
 		fill(255);
 		noStroke();
 		ellipse(this.loc.x, this.loc.y, this.diameter, this.diameter);
-	}
-
-	//makes the spheres bouncy on the edges of the window
-	edges(){
-		if(this.loc.x > width){
-			this.vel.x *= -1;
-			this.loc.x = width;
-		}
-		else if(this.loc.x < 0){
-			this.vel.x *= -1;
-			this.loc.x = 0;
-		}
-		if(this.loc.y > height){
-			this.vel.y *= -1;
-			this.loc.y = height;
-		}
-		else if(this.loc.y < 0){
-			vel.y *= -1;
-			this.loc.y = 0;
-		}
-
 	}
 
 	get min() {
@@ -104,35 +95,56 @@ class Mover{
 			y: this.y + this.radius
 		};
 	}
-
-	getVelocityAfterCollision(other) {
-		let m1 = this.mass;
-		let m2 = other.mass;
-		let v1 = this.getVel();
-		let v2 = other.getVel();
-		// https://phys.libretexts.org/Bookshelves/University_Physics/Book%3A_Mechanics_and_Relativity_(Idema)/04%3A_Momentum/4.07%3A_Totally_Elastic_Collisions
-		return (
-			v1.mult((m1 - m2) / (m1 + m2))
-				.add(v2.mult(2 * m2 / (m1 + m2)))
-		);
-	}
 }
 
-let m;
-let mp = false;
+let allObjects;
+let isMouseBeingPressed = false;
 let paused = false;
 let canvas;
+
+const getInitialObjects = () => ([
+	new CircleMover({ loc: createVector(random(width), 0.25 * height) }),
+	new CircleMover(),
+	new BoxMover({ loc: createVector(random(width), 0.75 * height) }),
+	// floor
+	new BoxMover({ 
+		loc: createVector(width/2, height), 
+		width, 
+		height: 10,
+		hasGravity: false,
+		mass: Infinity
+	}),
+	// ceiling
+	new BoxMover({ 
+		loc: createVector(width/2, 0), 
+		width, 
+		height: 10,
+		hasGravity: false,
+		mass: Infinity
+	}),
+	// left wall
+	new BoxMover({ 
+		loc: createVector(0, height/2), 
+		height, 
+		width: 10,
+		hasGravity: false,
+		mass: Infinity
+	}),
+	// right wall
+	new BoxMover({ 
+		loc: createVector(width, height/2), 
+		height, 
+		width: 10,
+		hasGravity: false,
+		mass: Infinity
+	}),
+])
 
 function setup() {
 	canvas = createCanvas(windowWidth, windowHeight);
 	canvas.position(0,0);
 
-	//randomly create 5 moving objects
-	m = [];
-	for(let i = 0; i < 2; i++){
-		let mov = new Mover();
-		m.push(mov);
-	}
+	allObjects = getInitialObjects();
 
 	//buttons allow for resets and pausing
 	let b1;
@@ -149,14 +161,17 @@ function setup() {
 //handles collisions between objects (but not walls)
 function handleCollisions() {
 	// loop through every pair of objects
-	for (let index1 = 0; index1 < m.length; index1++) {
-		for (let index2 = index1 + 1; index2 < m.length; index2++) {
-			let object1 = m[index1];
-			let object2 = m[index2];
-			if (areObjectsColliding(object1, object2)) {
-				let object1NewVelocity = object1.getVelocityAfterCollision(object2);
-				object2.vel = object2.getVelocityAfterCollision(object1);
-				object1.vel = object1NewVelocity;
+	for (let index1 = 0; index1 < allObjects.length; index1++) {
+		for (let index2 = index1 + 1; index2 < allObjects.length; index2++) {
+			let object1 = allObjects[index1];
+			let object2 = allObjects[index2];
+			let manifold = getManifold(object1, object2);
+			if (manifold /* are objects colliding? */) {
+				positionalCorrection(manifold);
+				manifold = getManifold(object1, object2);
+				if (manifold) {
+					resolveCollision(manifold);
+				}
 			}
 		}
 	}
@@ -169,25 +184,25 @@ function draw() {
 	background(0);
 
 	//for each object in the array of them (m)
-	m.forEach(e => {
-
-		//apply a abitrary gravity 
-		let gravity = createVector(0,0.3);
-		//gravity not based on mass so multiply it so it will be divided out later
-		gravity.mult(e.mass);
-		e.applyForce(gravity);
+	allObjects.forEach(e => {
+		if (e.hasGravity) {
+			//apply a abitrary gravity 
+			let gravity = createVector(0,0.3);
+			//gravity not based on mass so multiply it so it will be divided out later
+			gravity.mult(e.mass);
+			e.applyForce(gravity);
+		}
 
 		//if mouse is pressed (see mousePressed and mouseReleased) apply wind
-		if(mp){
+		if(isMouseBeingPressed){
 			let wind = createVector(0.2,0);
 			e.applyForce(wind);	
 		}
 
 		friction(e, -0.05);
 
-		//update object, collide with edges, and show objects
+		//update and show objects
 		e.update();
-		e.edges();
 		e.show();
 	});
 
@@ -233,11 +248,11 @@ function friction(mov, c){
 
 //bunch of quality of life functions that could be optimized
 function mousePressed() {
-	mp = true;
+	isMouseBeingPressed = true;
 }
 
 function mouseReleased() {
-	mp = false;
+	isMouseBeingPressed = false;
 }
 
 function pause(){
@@ -246,11 +261,7 @@ function pause(){
 
 function restart(){
 	paused = false;
-	m = [];
-	for(let i = 0; i < 2; i++){
-		let mov = new Mover();
-		m.push(mov);
-	}
+	allObjects = getInitialObjects();
 }
 
 function windowResized() {
