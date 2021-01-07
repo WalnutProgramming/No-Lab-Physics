@@ -165,6 +165,7 @@ class Ruler {
 		this.mainy = windowHeight/2;
 		this.shape1 = new Draggable(this.mainx - (this.mainx/2), this.mainy - (this.mainy/2), 20, 20)
 		this.shape2 = new Draggable(this.mainx + (this.mainx/2), this.mainy + (this.mainy/2), 20, 20)
+		this.shown = false;
 	}
 
 	draw(){
@@ -248,6 +249,11 @@ function setup() {
 	b2 = createButton('Restart');
  	b2.position(width/50, height/40);
  	b2.mousePressed(restart);
+
+ 	let b3;
+	b3 = createButton('Ruler');
+ 	b3.position(width/50, height/13);
+ 	b3.mousePressed(toggleRuler);
 }
 
 //handles collisions between objects (but not walls)
@@ -298,7 +304,9 @@ function draw() {
 		e.show();
 	});
 
-	ruler.draw()
+	if(ruler.shown){
+		ruler.draw()
+	}
 
 	handleCollisions();
 }
@@ -356,6 +364,10 @@ function pause(){
 function restart(){
 	paused = false;
 	allObjects = getInitialObjects();
+}
+
+function toggleRuler(){
+	ruler.shown = !ruler.shown;
 }
 
 function windowResized() {
