@@ -100,7 +100,7 @@ class CircleMover extends Mover {
 class Draggable {
 	constructor(x,y,w,h){
 		this.dragging = false;
-		this.rollover = false;
+		this.mouseOver = false;
 		this.x = x;
 		this.y = y;
 		this.w = w;
@@ -109,12 +109,12 @@ class Draggable {
 		this.offsetY = 0;
 	}
 
-	over(){
+	mousedOver(){
 		if (mouseX > this.x && mouseX < this.x + this.w && mouseY > this.y && mouseY < this.y + this.h) {
-	      this.rollover = true;
+	      this.mouseOver = true;
 	    } 
 	    else {
-	      this.rollover = false;
+	      this.mouseOver = false;
 	    }
 	}
 
@@ -137,7 +137,7 @@ class Draggable {
 		stroke(0);
 	    if (this.dragging) {
 	      fill(50);
-	    } else if (this.rollover) {
+	    } else if (this.mouseOver) {
 	      fill(100);
 	    } else {
 	      fill(175, 200);
@@ -163,18 +163,19 @@ class Ruler {
 	constructor(){
 		this.mainx = windowWidth/2;
 		this.mainy = windowHeight/2;
-		this.shape1 = new Draggable(this.mainx - (this.mainx/2), this.mainy - (this.mainy/2), 10, 10)
-		this.shape2 = new Draggable(this.mainx + (this.mainx/2), this.mainy + (this.mainy/2), 10, 10)
+		this.shape1 = new Draggable(this.mainx - (this.mainx/2), this.mainy - (this.mainy/2), 20, 20)
+		this.shape2 = new Draggable(this.mainx + (this.mainx/2), this.mainy + (this.mainy/2), 20, 20)
 	}
 
 	draw(){
-		this.shape1.over()
+		this.shape1.mousedOver()
 		this.shape1.update()
 		this.shape1.draw()
-		this.shape2.over()
+		this.shape2.mousedOver()
 		this.shape2.update()
 		this.shape2.draw()
 
+		fill(175, 200);
 		stroke(225)
 		line((this.shape1.x), (this.shape1.y), (this.shape2.x), (this.shape2.y));
 		rect((this.shape1.x + this.shape2.x)/2,(this.shape1.y + this.shape2.y)/2-20, 50, 20)
@@ -189,7 +190,7 @@ class Ruler {
 let allObjects;
 let isMouseBeingPressed = false;
 let paused = false;
-let canvas, r;
+let canvas, ruler;
 
 const getInitialObjects = () => ([
 	new CircleMover({ loc: createVector(random(width), 0.25 * height) }),
@@ -235,7 +236,7 @@ function setup() {
 
 	allObjects = getInitialObjects();
 
-	r = new Ruler();
+	ruler = new Ruler();
 
 	//buttons allow for resets and pausing
 	let b1;
@@ -297,7 +298,7 @@ function draw() {
 		e.show();
 	});
 
-	r.draw()
+	ruler.draw()
 
 	handleCollisions();
 }
@@ -339,13 +340,13 @@ function friction(mov, c){
 }
 
 function mousePressed() {
-	r.shape1.pressed();
- 	r.shape2.pressed();
+	ruler.shape1.pressed();
+ 	ruler.shape2.pressed();
 }
 
 function mouseReleased() {
-	r.shape1.released();
-	r.shape2.released();
+	ruler.shape1.released();
+	ruler.shape2.released();
 }
 
 function pause(){
