@@ -123,6 +123,14 @@ class Draggable {
 	      this.x = mouseX + this.offsetX;
 	      this.y = mouseY + this.offsetY;
 	    }
+	    if(this.x < 0)
+	    	this.x = 0
+	    if(this.y < 0)
+	    	this.y = 0
+   		if(this.x > windowWidth)
+   			this.x = windowWidth
+   		if(this.y > windowHeight)
+   			this.y = windowHeight
 	}
 
 	draw(){
@@ -166,6 +174,7 @@ class Ruler {
 		this.shape2.over()
 		this.shape2.update()
 		this.shape2.draw()
+
 		stroke(225)
 		line((this.shape1.x), (this.shape1.y), (this.shape2.x), (this.shape2.y));
 		rect((this.shape1.x + this.shape2.x)/2,(this.shape1.y + this.shape2.y)/2-20, 50, 20)
