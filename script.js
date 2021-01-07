@@ -366,6 +366,7 @@ function pause(){
 function restart(){
 	paused = false;
 	allObjects = getInitialObjects();
+	ruler = new Ruler();
 }
 
 function toggleRuler(){
