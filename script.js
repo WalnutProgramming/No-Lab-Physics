@@ -110,10 +110,11 @@ class Draggable {
 	}
 
 	mousedOver(){
-		if (mouseX > this.x - (this.w/2) && mouseX < this.x + (this.w/2) && mouseY > this.y - (this.h/2) && mouseY < this.y + (this.h/2)) {
+		let d = pow(this.w/2,2) - (pow(this.x - mouseX,2) + pow(this.y - mouseY,2))
+		if(d >= 0){
 			this.rollover = true;
-		} 
-		else {
+		}
+		else{
 			this.rollover = false;
 		}
 	}
@@ -146,7 +147,8 @@ class Draggable {
 	}
 
 	pressed(){
-		if (mouseX > this.x - (this.w/2) && mouseX < this.x + (this.w/2) && mouseY > this.y - (this.h/2) && mouseY < this.y + (this.h/2)) {
+		let d = pow(this.w/2,2) - (pow(this.x - mouseX,2) + pow(this.y - mouseY,2))
+		if(d >= 0){
 			this.dragging = true;
 			this.offsetX = this.x - mouseX;
 			this.offsetY = this.y - mouseY;
