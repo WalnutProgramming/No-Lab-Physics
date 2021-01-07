@@ -111,46 +111,46 @@ class Draggable {
 
 	over(){
 		if (mouseX > this.x && mouseX < this.x + this.w && mouseY > this.y && mouseY < this.y + this.h) {
-	      this.rollover = true;
-	    } 
-	    else {
-	      this.rollover = false;
-	    }
+			this.rollover = true;
+		} 
+		else {
+			this.rollover = false;
+		}
 	}
 
 	update(){
 		if (this.dragging) {
-	      this.x = mouseX + this.offsetX;
-	      this.y = mouseY + this.offsetY;
-	    }
-	    if(this.x < 0)
-	    	this.x = 0
-	    if(this.y < 0)
-	    	this.y = 0
-   		if(this.x > windowWidth)
-   			this.x = windowWidth
-   		if(this.y > windowHeight)
-   			this.y = windowHeight
+			this.x = mouseX + this.offsetX;
+			this.y = mouseY + this.offsetY;
+		}
+		if(this.x < 0)
+			this.x = 0
+		if(this.y < 0)
+			this.y = 0
+		if(this.x > windowWidth)
+			this.x = windowWidth
+		if(this.y > windowHeight)
+			this.y = windowHeight
 	}
 
 	draw(){
 		stroke(0);
-	    if (this.dragging) {
-	      fill(50);
-	    } else if (this.rollover) {
-	      fill(100);
-	    } else {
-	      fill(175, 200);
-	    }
-	    ellipse(this.x, this.y, this.w, this.h);
+		if (this.dragging) {
+			fill(50);
+		} else if (this.rollover) {
+			fill(100);
+		} else {
+			fill(175, 200);
+		}
+		ellipse(this.x, this.y, this.w, this.h);
 	}
 
 	pressed(){
 		if (mouseX > this.x && mouseX < this.x + this.w && mouseY > this.y && mouseY < this.y + this.h) {
-	      this.dragging = true;
-	      this.offsetX = this.x - mouseX;
-	      this.offsetY = this.y - mouseY;
-	    }
+			this.dragging = true;
+			this.offsetX = this.x - mouseX;
+			this.offsetY = this.y - mouseY;
+		}
 	}
 
 	released(){
@@ -358,5 +358,5 @@ function restart(){
 }
 
 function windowResized() {
-   resizeCanvas(windowWidth, windowHeight);
+	resizeCanvas(windowWidth, windowHeight);
 }
