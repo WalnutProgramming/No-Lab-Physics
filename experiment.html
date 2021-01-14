@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script defer src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
+<script defer src="coordTransforms.js"></script>
+<script defer src="collisions.js"></script>
+<script defer src="script.js"></script>
+
+<link rel="stylesheet" href="style.css">
+
+<nav style="background-color: rgb(119, 119, 240);">
+  <li>
+    <div style="display: flex;">
+      <ul><a href="/">Home</a></ul>
+      <ul><a href="/about.html">About</a></ul>
+      <ul><a href="/explore.html">Explore Simulations</a></ul>
+      <ul><a href="/feedback.html">Feedback</a></ul>
+    </div>
+  </li>
+</nav>
+
+<main>
+	<button id="pause" onclick="pause()">Pause/Play</button>
+	<button id="restart" onclick="pause()">Restart</button>
+	<button id="ruler" onclick="toggleRuler()">Ruler</button>
+	<div id="put-canvas-here"></div>
+</main>
