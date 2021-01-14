@@ -2,7 +2,7 @@ class Mover {
 	constructor({ 
 		mass = random(0.5, 3),
 		// location is the position of the center of mass
-		loc = createVector(random(width),(0.5*height)),
+		loc = createVector(random(canvasWidth()),(0.5*canvasHeight())),
 		vel = createVector(0, 0),
 		acc = createVector(0, 0),
 		hasGravity = true
@@ -58,7 +58,11 @@ class BoxMover extends Mover {
 		fill(255);
 		noStroke();
 		rectMode(CENTER);
-		rect(this.x, this.y, this.width, this.height);
+		
+		const { x, y } = coordToPixels(this.loc)
+		const width = distToPixels(this.width)
+		const height = distToPixels(this.height)
+		rect(x, y, width, height);
 	}
 }
 
@@ -79,7 +83,10 @@ class CircleMover extends Mover {
 	show(){
 		fill(255);
 		noStroke();
-		ellipse(this.loc.x, this.loc.y, this.diameter, this.diameter);
+
+		const { x, y } = coordToPixels(this.loc)
+		const diameter = distToPixels(this.diameter)
+		ellipse(x, y, diameter, diameter);
 	}
 
 	get min() {
@@ -128,10 +135,10 @@ class Draggable {
 			this.x = 0
 		if(this.y < 0)
 			this.y = 0
-		if(this.x > windowWidth)
-			this.x = windowWidth
-		if(this.y > windowHeight)
-			this.y = windowHeight
+		if(this.x > canvasWidth())
+			this.x = canvasWidth()
+		if(this.y > canvasHeight())
+			this.y = canvasHeight()
 	}
 
 	draw(){
@@ -163,8 +170,8 @@ class Draggable {
 class Ruler {
 
 	constructor(){
-		this.mainx = windowWidth/2;
-		this.mainy = windowHeight/2;
+		this.mainx = canvasWidth()/2;
+		this.mainy = canvasHeight()/2;
 		this.shape1 = new Draggable(this.mainx - (this.mainx/2), this.mainy - (this.mainy/2), 20, 20)
 		this.shape2 = new Draggable(this.mainx + (this.mainx/2), this.mainy + (this.mainy/2), 20, 20)
 		this.shown = false;
@@ -196,12 +203,12 @@ let paused = false;
 let canvas, ruler;
 
 const getInitialObjects = () => ([
-	new CircleMover({ loc: createVector(random(width), 0.25 * height) }),
+	new CircleMover({ loc: createVector(random(canvasWidth()), 0.25 * canvasHeight()) }),
 	new CircleMover(),
-	new BoxMover({ loc: createVector(random(width), 0.75 * height) }),
+	new BoxMover({ loc: createVector(random(canvasWidth()), 0.75 * canvasHeight()) }),
 	// floor
 	new BoxMover({ 
-		loc: createVector(width/2, height), 
+		loc: createVector(canvasWidth()/2, canvasHeight()), 
 		width, 
 		height: 10,
 		hasGravity: false,
@@ -209,7 +216,7 @@ const getInitialObjects = () => ([
 	}),
 	// ceiling
 	new BoxMover({ 
-		loc: createVector(width/2, 0), 
+		loc: createVector(canvasWidth()/2, 0), 
 		width, 
 		height: 10,
 		hasGravity: false,
@@ -217,7 +224,7 @@ const getInitialObjects = () => ([
 	}),
 	// left wall
 	new BoxMover({ 
-		loc: createVector(0, height/2), 
+		loc: createVector(0, canvasHeight()/2), 
 		height, 
 		width: 10,
 		hasGravity: false,
@@ -225,7 +232,7 @@ const getInitialObjects = () => ([
 	}),
 	// right wall
 	new BoxMover({ 
-		loc: createVector(width, height/2), 
+		loc: createVector(canvasWidth(), canvasHeight()/2), 
 		height, 
 		width: 10,
 		hasGravity: false,
@@ -234,7 +241,7 @@ const getInitialObjects = () => ([
 ])
 
 function setup() {
-	canvas = createCanvas(windowWidth, windowHeight);
+	canvas = createCanvas(canvasWidthPixels(), canvasHeightPixels());
 	canvas.position(0,0);
 
 	allObjects = getInitialObjects();
@@ -244,17 +251,17 @@ function setup() {
 	//buttons allow for resets and pausing
 	let b1;
 	b1 = createButton('Pause');
- 	b1.position(width/50, height/20);
+ 	b1.position(canvasWidthPixels()/50, canvasHeightPixels()/20);
  	b1.mousePressed(pause);
 
  	let b2;
 	b2 = createButton('Restart');
- 	b2.position(width/50, height/40);
+ 	b2.position(canvasWidthPixels()/50, canvasHeightPixels()/40);
  	b2.mousePressed(restart);
 
  	let b3;
 	b3 = createButton('Ruler');
- 	b3.position(width/50, height/13);
+ 	b3.position(canvasWidthPixels()/50, canvasHeightPixels()/13);
  	b3.mousePressed(toggleRuler);
 }
 
@@ -374,5 +381,5 @@ function toggleRuler(){
 }
 
 function windowResized() {
-	resizeCanvas(windowWidth, windowHeight);
+	resizeCanvas(canvasWidthPixels(), canvasHeightPixels());
 }
