@@ -1,3 +1,18 @@
+import {
+  canvasContainer,
+  canvasHeight,
+  canvasHeightPixels,
+  canvasWidth,
+  canvasWidthPixels,
+  coordToPixels,
+  distToPixels,
+} from "./coordTransforms.js";
+import {
+  resolveCollision,
+  getManifold,
+  positionalCorrection,
+} from "./collisions.js";
+
 class Mover {
 	constructor({ 
 		mass = random(0.5, 3),
@@ -66,7 +81,7 @@ class BoxMover extends Mover {
 	}
 }
 
-class CircleMover extends Mover {
+export class CircleMover extends Mover {
 	constructor(options = {}) {
 		super(options);
 	}
@@ -240,12 +255,12 @@ const getInitialObjects = () => ([
 	}),
 ])
 
-function setup() {
+window.setup = function setup() {
 	canvas = createCanvas(canvasWidthPixels(), canvasHeightPixels());
 	// canvas.position(0, 0)
 	
 	// Move canvas into the #put-canvas-here element
-	document.getElementById('put-canvas-here').appendChild(document.querySelector('.p5Canvas'))
+	canvasContainer.appendChild(document.querySelector('.p5Canvas'))
 
 	allObjects = getInitialObjects();
 
@@ -288,7 +303,7 @@ function handleCollisions() {
 }
 
 //loops "constantly" to apply forces and have objects draw themselves
-function draw() {
+window.draw = function draw() {
 
 	background(0);
 
@@ -359,12 +374,12 @@ function friction(mov, c){
 	mov.applyForce(f);
 }
 
-function mousePressed() {
+window.mousePressed = function mousePressed() {
 	ruler.shape1.pressed();
  	ruler.shape2.pressed();
 }
 
-function mouseReleased() {
+window.mouseReleased = function mouseReleased() {
 	ruler.shape1.released();
 	ruler.shape2.released();
 }
@@ -383,6 +398,6 @@ function toggleRuler(){
 	ruler.shown = !ruler.shown;
 }
 
-function windowResized() {
+window.windowResized = function windowResized() {
 	resizeCanvas(canvasWidthPixels(), canvasHeightPixels());
 }

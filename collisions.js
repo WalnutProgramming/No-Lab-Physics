@@ -1,4 +1,6 @@
-function resolveCollision({ a, b, normal }) {
+import {CircleMover} from './script.js'
+
+export function resolveCollision({ a, b, normal }) {
 	let relativeVelocityOfB = b.getVel().sub(a.getVel());
 
 	let velAlongNormal = relativeVelocityOfB.dot(normal);
@@ -20,7 +22,7 @@ function resolveCollision({ a, b, normal }) {
 }
 
 // Correcting the position of 2 objects so that they're not inside each other
-function positionalCorrection({ a, b, normal, penetrationDepth }) {
+export function positionalCorrection({ a, b, normal, penetrationDepth }) {
 	// How much of the penetration depth to move out at once
 	const percent = 0.2;
 	// Minimum penetration depth needed to do a correction
@@ -35,7 +37,7 @@ function positionalCorrection({ a, b, normal, penetrationDepth }) {
 }
 
 // returns null if not colliding
-function getManifold(a, b) {
+export function getManifold(a, b) {
 	if (a.mass === Infinity && b.mass === Infinity) return null;
 
 	return (
@@ -47,7 +49,7 @@ function getManifold(a, b) {
 	);
 }
 
-function getCircleCircleManifold(a, b) {
+export function getCircleCircleManifold(a, b) {
 	// vector from a to b
 	let normal = b.loc.copy().sub(a.loc)
 
