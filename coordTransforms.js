@@ -1,6 +1,6 @@
 // top right position of canvas in pixels
 // we need to make this a function because p5 isn't initialized yet
-const pixelOffset = () => createVector(0, 0);
+const pixelOffset = () => createVector(Math.sin((Date.now() / 1000)) * 90, Math.cos((Date.now() / 1000)) * 90);
 // ratio of pixels to original
 const pixelScale = () => 1;
 
