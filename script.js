@@ -242,7 +242,10 @@ const getInitialObjects = () => ([
 
 function setup() {
 	canvas = createCanvas(canvasWidthPixels(), canvasHeightPixels());
-	canvas.position(0,0);
+	// canvas.position(0, 0)
+	
+	// Move canvas into the #put-canvas-here element
+	document.getElementById('put-canvas-here').appendChild(document.querySelector('.p5Canvas'))
 
 	allObjects = getInitialObjects();
 

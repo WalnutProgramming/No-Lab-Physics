@@ -1,0 +1,34 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+main,
+#put-canvas-here,
+canvas {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  
+}
+
+canvas {
+  display: block;
+}
+
+html, body, main, #put-canvas-here {
+  width: 100%; 
+  height: 100%;
+}
+
+#put-canvas-here {
+  height: 85%
+}
+
+/* Center child vertically and horizontally */
+#put-canvas-here {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

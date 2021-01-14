@@ -20,7 +20,9 @@ function pixelsToDist(n) {
 	return n / pixelScale();
 }
 
-const canvasWidthPixels = () => window.innerWidth / 1;
-const canvasHeightPixels = () => window.innerHeight / 1;
+const canvasContainer = document.getElementById('put-canvas-here')
+
+const canvasWidthPixels = () => canvasContainer.clientWidth;
+const canvasHeightPixels = () => canvasContainer.clientHeight;
 const canvasWidth = () => pixelsToDist(canvasWidthPixels())
 const canvasHeight = () => pixelsToDist(canvasHeightPixels())
