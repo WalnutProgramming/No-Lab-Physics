@@ -250,22 +250,6 @@ function setup() {
 	allObjects = getInitialObjects();
 
 	ruler = new Ruler();
-
-	//buttons allow for resets and pausing
-	let b1;
-	b1 = createButton('Pause');
- 	b1.position(canvasWidthPixels()/50, canvasHeightPixels()/20);
- 	b1.mousePressed(pause);
-
- 	let b2;
-	b2 = createButton('Restart');
- 	b2.position(canvasWidthPixels()/50, canvasHeightPixels()/40);
- 	b2.mousePressed(restart);
-
- 	let b3;
-	b3 = createButton('Ruler');
- 	b3.position(canvasWidthPixels()/50, canvasHeightPixels()/13);
- 	b3.mousePressed(toggleRuler);
 }
 
 //handles collisions between objects (but not walls)
