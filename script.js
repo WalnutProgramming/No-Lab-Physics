@@ -150,20 +150,26 @@ function draw() {
 }
 
 console.log("start");
-const states = [getStateFromUrlHash() ?? getInitialState()];
+let states;
+let statesInd;
 function generateNextState() {
 	const lastState = cloneDeep(states[states.length - 1]);
 	update(lastState);
 	states.push(lastState);
 }
-while (states.length < 60 * 60 * 0.5) generateNextState();
+function resetAndRandomizeStates() {
+	states = [getStateFromUrlHash() ?? getInitialState()]
+	statesInd = 0;
+	while (states.length < 60 * 60 * 0.5) generateNextState();
+}
+window.restart = resetAndRandomizeStates;
+resetAndRandomizeStates();
 console.log("done");
 document.getElementById("loading-experiment").innerHTML = "";
 
 const timeSlider = document.getElementById("time-slider");
 timeSlider.value = 0;
 
-let statesInd = 0;
 function showTime() {
 	const seconds = statesInd / 60;
 	const secondsFloored = Math.floor(seconds);
@@ -267,10 +273,6 @@ window.addEventListener("mousemove", (e) => {
 
 window.pause = () => {
 	userState.paused = !userState.paused;
-};
-
-window.restart = () => {
-	state = getInitialState();
 };
 
 window.toggleRuler = () => {
