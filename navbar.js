@@ -12,6 +12,7 @@ class PhysicsNavbar extends HTMLElement {
         </li>
       </nav>
 
+      <!-- styles are scoped to the navbar -->
       <style>
         nav {
           background-color: rgb(119, 119, 240);
