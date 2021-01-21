@@ -4,23 +4,25 @@
 
 <script type="module" src="./navbar.js"></script>
 
-<script defer src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.min.js"></script>
 <script src="https://unpkg.com/clipboard@2.0.6/dist/clipboard.min.js"></script>
-<script defer src="coordTransforms.js"></script>
-<script defer src="collisions.js"></script>
-<script defer src="objects.js"></script>
-<script defer src="serialization.js"></script>
-<script defer src="script.js"></script>
+<script defer src="script.js" type="module"></script>
 
 <link rel="stylesheet" href="style.css">
 
 <physics-navbar></physics-navbar>
 
 <main>
-	<button id="pause" onclick="pause()">Pause/Play</button>
-	<button id="restart" onclick="restart()">Restart</button>
-  <button id="ruler" onclick="toggleRuler()">Ruler</button>
-  <button id="copy-link">Copy link to current state</button>
-  <span id="copy-link-tooltip"></span>
-	<div id="put-canvas-here"></div>
+  <div style="display: flex">
+    <button id="pause" onclick="pause()">Pause/Play</button>
+    <button id="restart" onclick="restart()">Restart</button>
+    <button id="ruler" onclick="toggleRuler()">Ruler</button>
+    <button id="copy-link">Copy link</button>
+    <span id="loading-experiment" style="margin-right: 1em">Loading experiment...</span>
+    <pre id="time"></pre>
+    <span id="copy-link-tooltip"></span>
+    <input id="time-slider" type="range" min="0" max="1" step="any" style="width: 100%" value="0" />
+  </div>
+	<div id="put-canvas-here">
+    <canvas></canvas>
+  </div>
 </main>

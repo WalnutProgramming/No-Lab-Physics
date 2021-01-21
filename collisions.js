@@ -1,5 +1,9 @@
-function resolveCollision({ a, b, normal }) {
-	let relativeVelocityOfB = b.getVel().sub(a.getVel());
+import { CircleMover } from "./objects.js";
+import { constrain } from "./helpers.js";
+import Vector from "./vector.js";
+
+export function resolveCollision({ a, b, normal }) {
+	let relativeVelocityOfB = b.vel.subt(a.vel);
 
 	let velAlongNormal = relativeVelocityOfB.dot(normal);
 
@@ -15,57 +19,61 @@ function resolveCollision({ a, b, normal }) {
 	let impulse = normal.mult(impulseScalar);
 
 	// Apply impulse
-	a.vel.sub(impulse.copy().mult(1 / a.mass));
-	b.vel.add(impulse.copy().mult(1 / b.mass));
+	a.vel = a.vel.subt(impulse.div(a.mass));
+	b.vel = b.vel.add(impulse.div(b.mass));
 }
 
 // Correcting the position of 2 objects so that they're not inside each other
-function positionalCorrection({ a, b, normal, penetrationDepth }) {
+export function positionalCorrection({ a, b, normal, penetrationDepth }) {
 	// How much of the penetration depth to move out at once
 	const percent = 0.2;
 	// Minimum penetration depth needed to do a correction
 	const slop = 0.01;
 	let correction = normal
-		.copy()
 		.mult(Math.max(penetrationDepth - slop, 0))
-		.div(1/a.mass + 1/b.mass)
+		.div(1 / a.mass + 1 / b.mass)
 		.mult(percent);
-	a.loc.sub(correction.copy().mult(1 / a.mass));
-	b.loc.add(correction.copy().mult(1 / b.mass));
+	// TODO: put back
+	a.loc = a.loc.subt(correction.mult(1 / a.mass));
+	b.loc = b.loc.add(correction.mult(1 / b.mass));
 }
 
 // returns null if not colliding
-function getManifold(a, b) {
+export function getManifold(a, b) {
 	if (a.mass === Infinity && b.mass === Infinity) return null;
 
-	return (
-		 isCircle(a) &&  isCircle(b) ? getCircleCircleManifold(a, b) :
-		 isCircle(a) && !isCircle(b) ? getCircleBoxManifold(b, a) :
-		!isCircle(a) &&  isCircle(b) ? getCircleBoxManifold(a, b) :
-		!isCircle(a) && !isCircle(b) ? getBoxBoxManifold(a, b) :
-		null
-	);
+	const m =
+		isCircle(a) && isCircle(b)
+			? getCircleCircleManifold(a, b)
+			: isCircle(a) && !isCircle(b)
+			? getCircleBoxManifold(b, a)
+			: !isCircle(a) && isCircle(b)
+			? getCircleBoxManifold(a, b)
+			: !isCircle(a) && !isCircle(b)
+			? getBoxBoxManifold(a, b)
+			: null;
+	return m;
 }
 
 function getCircleCircleManifold(a, b) {
 	// vector from a to b
-	let normal = b.loc.copy().sub(a.loc)
+	let normal = b.loc.subt(a.loc);
 
-	let sumOfRadii = (a.radius + b.radius);
+	let sumOfRadii = a.radius + b.radius;
 
-	if (normal.magSq() > sumOfRadii**2) {
+	if (normal.magnitudeSquared() > sumOfRadii ** 2) {
 		return null;
 	}
 
-	let distanceBetweenCenters = normal.mag();
+	let distanceBetweenCenters = normal.magnitude();
 
 	if (distanceBetweenCenters === 0) {
 		// Choose arbitrary (but consistent) values
-		return { 
-			a, 
-			b, 
-			penetrationDepth: a.radius, 
-			normal: createVector(1, 0) 
+		return {
+			a,
+			b,
+			penetrationDepth: a.radius,
+			normal: new Vector(1, 0),
 		};
 	}
 
@@ -73,7 +81,7 @@ function getCircleCircleManifold(a, b) {
 		a,
 		b,
 		penetrationDepth: sumOfRadii - distanceBetweenCenters,
-		normal: normal.copy().div(distanceBetweenCenters)
+		normal: normal.div(distanceBetweenCenters),
 	};
 }
 
@@ -84,9 +92,9 @@ function nonZeroSign(n) {
 }
 
 function getCircleBoxManifold(aBox, bCircle) {
-	let circleLocRelative = bCircle.loc.copy().sub(aBox.loc);
+	let circleLocRelative = bCircle.loc.subt(aBox.loc);
 	// closest point on box to circle center
-	let closest = circleLocRelative.copy();
+	let closest = circleLocRelative.clone();
 
 	let xExtent = aBox.width / 2;
 	let yExtent = aBox.height / 2;
@@ -106,53 +114,51 @@ function getCircleBoxManifold(aBox, bCircle) {
 		}
 	}
 
-	let normal = circleLocRelative.copy().sub(closest);
-	let d = normal.magSq();
+	let normal = circleLocRelative.clone().subt(closest);
+	let d = normal.magnitudeSquared();
 	let r = bCircle.radius;
 
 	// Early out if the radius is shorter than distance to closest point and
 	// Circle not inside the box
-	if(d > r * r && !inside) return null;
+	if (d > r * r && !inside) return null;
 
-	normal.normalize();
+	normal = normal.normalize();
 
 	// Collision normal needs to be flipped to point outside if circle was
 	// inside the box
-	if (inside) normal.mult(-1);
+	if (inside) normal = normal.mult(-1);
 
-	return (
-		{
-			a: aBox,
-			b: bCircle,
-			normal,
-			penetrationDepth: r - Math.sqrt(d),
-		}
-	)
+	return {
+		a: aBox,
+		b: bCircle,
+		normal,
+		penetrationDepth: r - Math.sqrt(d),
+	};
 }
 
 function getBoxBoxManifold(a, b) {
-	let normal = b.loc.copy().sub(a.loc);
-	
-	let xOverlap = a.width/2 + b.width/2 - Math.abs(normal.x);
+	let normal = b.loc.subt(a.loc);
+
+	let xOverlap = a.width / 2 + b.width / 2 - Math.abs(normal.x);
 	if (xOverlap <= 0) return null;
-	
-	let yOverlap = a.height/2 + b.height/2 - Math.abs(normal.y)
+
+	let yOverlap = a.height / 2 + b.height / 2 - Math.abs(normal.y);
 	if (yOverlap <= 0) return null;
 
 	if (xOverlap < yOverlap) {
 		return {
 			a,
 			b,
-			normal: createVector(nonZeroSign(normal.x), 0),
-			penetrationDepth: xOverlap
-		}
+			normal: new Vector(nonZeroSign(normal.x), 0),
+			penetrationDepth: xOverlap,
+		};
 	} else {
 		return {
 			a,
 			b,
-			normal: createVector(0, nonZeroSign(normal.y)),
-			penetrationDepth: yOverlap
-		}
+			normal: new Vector(0, nonZeroSign(normal.y)),
+			penetrationDepth: yOverlap,
+		};
 	}
 }
 
