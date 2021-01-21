@@ -14,7 +14,7 @@ import {
 	positionalCorrection,
 	resolveCollision,
 } from "./collisions.js";
-import { deserialize, serialize } from "./serialization.js";
+import { getStateFromUrlHash, getSerializedUrl } from "./serialization.js";
 import { cloneDeep } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1PSWaO3mr3KWqgK/min/lodash-es.js";
 
 let isMouseBeingPressed = false;
@@ -64,7 +64,6 @@ const getInitialState = () => ({
 	],
 });
 
-// let state = /*getStateFromUrlHash() ??*/ getInitialState();
 let state;
 
 let userState = {
@@ -151,7 +150,7 @@ function draw() {
 }
 
 console.log("start");
-const states = [getInitialState()];
+const states = [getStateFromUrlHash() ?? getInitialState()];
 function generateNextState() {
 	const lastState = cloneDeep(states[states.length - 1]);
 	update(lastState);
@@ -192,6 +191,25 @@ timeSlider.addEventListener("input", () => {
 	statesInd = Math.floor(timeSlider.value * states.length);
 	showTime();
 });
+
+const clipboard = new ClipboardJS('#copy-link', {
+	text: () => getSerializedUrl(states[0])
+})
+
+const copyLinkToolTip = document.getElementById('copy-link-tooltip')
+clipboard.on('success', () => {
+	copyLinkToolTip.textContent = 'Copied!'
+	setTimeout(() => {
+		copyLinkToolTip.textContent = ''
+	}, 2000)
+})
+clipboard.on('error', () => {
+	copyLinkToolTip.textContent = 'Failed to copy. Here is the URL for you to copy manually: ' + getSerializedUrl(states[0])
+})
+
+window.addEventListener('hashchange', () => {
+	location.reload()
+})
 
 // draw();
 

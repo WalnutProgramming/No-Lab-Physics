@@ -3,7 +3,7 @@ import { Mover, BoxMover, CircleMover, Ruler, Draggable } from "./objects.js";
 
 /** The classes that can be serialized and deserialized */
 const classes = {
-	Vector: Vector,
+	Vector,
 	Mover,
 	BoxMover,
 	CircleMover,
@@ -23,7 +23,7 @@ const classes = {
  * @param {*} state the state object
  * @returns a JSON string
  */
-export function serialize(state) {
+function serialize(state) {
 	return JSON.stringify(state, (_key, value) => {
 		if (typeof value === "number" && !isFinite(value)) {
 			return "$number::" + value;
@@ -55,7 +55,7 @@ export function serialize(state) {
  * @param {string} json A JSON string generated with serialize.
  * @returns the state object
  */
-export function deserialize(json) {
+function deserialize(json) {
 	return JSON.parse(json, (_key, value) => {
 		if (value === "$number::Infinity") return Infinity;
 		if (value === "$number::-Infinity") return -Infinity;
@@ -93,26 +93,7 @@ export function getStateFromUrlHash() {
 	}
 }
 
-// function getSerializedUrl() {
-// 	const urlWithoutHash = window.location.href.replace(window.location.hash, '')
-// 	return urlWithoutHash + '#' + encodeURI(serialize(state))
-// }
-
-// const clipboard = new ClipboardJS('#copy-link', {
-// 	text: getSerializedUrl
-// })
-
-// const copyLinkToolTip = document.getElementById('copy-link-tooltip')
-// clipboard.on('success', () => {
-// 	copyLinkToolTip.textContent = 'Copied!'
-// 	setTimeout(() => {
-// 		copyLinkToolTip.textContent = ''
-// 	}, 2000)
-// })
-// clipboard.on('error', () => {
-// 	copyLinkToolTip.textContent = 'Failed to copy. Here is the URL for you to copy manually: ' + getSerializedUrl()
-// })
-
-// window.addEventListener('hashchange', () => {
-// 	location.reload()
-// })
+export function getSerializedUrl(state) {
+	const urlWithoutHash = window.location.href.replace(window.location.hash, '')
+	return urlWithoutHash + '#' + encodeURI(serialize(state))
+}
