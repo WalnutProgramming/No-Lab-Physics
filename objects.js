@@ -1,11 +1,30 @@
-class Mover {
-	constructor({ 
+import {
+	ctx,
+	canvasWidth,
+	canvasHeight,
+	circle,
+	rect,
+	line,
+	canvasScope,
+	mouseY,
+	mouseX,
+} from "./canvas.js";
+import {
+	coordToPixels,
+	pixelsToCoord,
+	pixelsToDist,
+} from "./coordTransforms.js";
+import { random } from "./helpers.js";
+import Vector from "./vector.js";
+
+export class Mover {
+	constructor({
 		mass = random(0.5, 3),
 		// location is the position of the center of mass
-		loc = createVector(random(canvasWidth()),(0.5*canvasHeight())),
-		vel = createVector(0, 0),
-		acc = createVector(0, 0),
-		hasGravity = true
+		loc = new Vector(random(canvasWidth()), 0.5 * canvasHeight()),
+		vel = new Vector(0, 0),
+		acc = new Vector(0, 0),
+		hasGravity = true,
 	}) {
 		this.mass = mass;
 		this.loc = loc;
@@ -15,23 +34,18 @@ class Mover {
 	}
 
 	//divides the force by the objects mass then adds to acceleration
-	applyForce(f){
+	applyForce(f) {
 		// Note: we use mult(1/) instead of div() because div() doesn't like dividing by Infinity
-		let force = f.mult(1 / this.mass);
-		this.acc.add(force);
+		let force = f.div(this.mass);
+		this.acc = this.acc.add(force);
 	}
 
 	//updates the object's position and velocity
-	update(){
-		this.vel.add(this.acc);
-		this.loc.add(this.vel);
+	update() {
+		this.vel = this.vel.add(this.acc);
+		this.loc = this.loc.add(this.vel);
 		//all components of vector multiplied by 0 will become 0 (new net force on frame)
-		this.acc.mult(0); 
-	}
-
-	// convenience functions
-	getVel() {
-		return this.vel.copy();
+		this.acc = new Vector(0, 0);
 	}
 
 	get x() {
@@ -43,7 +57,7 @@ class Mover {
 	}
 }
 
-class BoxMover extends Mover {
+export class BoxMover extends Mover {
 	constructor({
 		width = random(50, 100),
 		height = random(50, 100),
@@ -54,19 +68,13 @@ class BoxMover extends Mover {
 		this.height = height;
 	}
 
-	show() {
-		fill(255);
-		noStroke();
-		rectMode(CENTER);
-		
-		const { x, y } = coordToPixels(this.loc)
-		const width = distToPixels(this.width)
-		const height = distToPixels(this.height)
-		rect(x, y, width, height);
+	draw() {
+		ctx.fillStyle = "rgb(255, 255, 255)";
+		rect(this.loc, this.width, this.height);
 	}
 }
 
-class CircleMover extends Mover {
+export class CircleMover extends Mover {
 	constructor(options = {}) {
 		super(options);
 	}
@@ -80,127 +88,147 @@ class CircleMover extends Mover {
 	}
 
 	//draws the spheres on the canvas
-	show(){
-		fill(255);
-		noStroke();
+	draw() {
+		ctx.fillStyle = "rgb(255, 255, 255)";
 
-		const { x, y } = coordToPixels(this.loc)
-		const diameter = distToPixels(this.diameter)
-		ellipse(x, y, diameter, diameter);
+		circle(this.loc, this.radius);
 	}
 
 	get min() {
 		return {
 			x: this.x - this.radius,
-			y: this.y - this.radius
+			y: this.y - this.radius,
 		};
 	}
 
 	get max() {
 		return {
 			x: this.x + this.radius,
-			y: this.y + this.radius
+			y: this.y + this.radius,
 		};
 	}
 }
 
-class Draggable {
-	constructor(x,y,w,h){
+export class Draggable {
+	constructor(x, y, radius) {
 		this.dragging = false;
 		this.mouseOver = false;
 		this.x = x;
 		this.y = y;
-		this.w = w;
-		this.h = h;
+		this.radius = radius;
 		this.offsetX = 0;
 		this.offsetY = 0;
-  }
-  
-  static fromJSON({x, y, w, h}) {
-    return new Draggable(x, y, w, h)
-  }
+	}
 
-	mousedOver(){
-		let d = pow(this.w/2,2) - (pow(this.x - mouseX,2) + pow(this.y - mouseY,2))
-		if(d >= 0){
+	static fromJSON({ x, y, radius }) {
+		return new Draggable(x, y, radius);
+	}
+
+	mousedOver() {
+		let d =
+			(this.radius / 2) ** 2 -
+			(this.x - mouseX()) ** 2 +
+			(this.y - mouseY()) ** 2;
+		if (d >= 0) {
 			this.rollover = true;
-		}
-		else{
+		} else {
 			this.rollover = false;
 		}
 	}
 
-	update(){
+	update() {
 		if (this.dragging) {
-			this.x = mouseX + this.offsetX;
-			this.y = mouseY + this.offsetY;
+			this.x = mouseX() + this.offsetX;
+			this.y = mouseY() + this.offsetY;
 		}
-		if(this.x < 0)
-			this.x = 0
-		if(this.y < 0)
-			this.y = 0
-		if(this.x > canvasWidth())
-			this.x = canvasWidth()
-		if(this.y > canvasHeight())
-			this.y = canvasHeight()
+		if (this.x < 0) this.x = 0;
+		if (this.y < 0) this.y = 0;
+		if (this.x > canvasWidth()) this.x = canvasWidth();
+		if (this.y > canvasHeight()) this.y = canvasHeight();
 	}
 
-	draw(){
-		stroke(0);
+	draw() {
+		ctx.strokeStyle = "rgb(0, 0, 0)";
 		if (this.dragging) {
-			fill(50);
+			ctx.fillStyle = "rgb(50, 50, 50)";
 		} else if (this.rollover) {
-			fill(100);
+			ctx.fillStyle = "rgb(100, 100, 100)";
 		} else {
-			fill(175, 200);
+			// fill(175, 200);
+			ctx.fillStyle = "rgb(175, 200, 0)";
 		}
-		ellipse(this.x, this.y, this.w, this.h);
+		circle(new Vector(this.x, this.y), this.radius);
 	}
 
-	pressed(){
-		let d = pow(this.w/2,2) - (pow(this.x - mouseX,2) + pow(this.y - mouseY,2))
-		if(d >= 0){
+	pressed() {
+		let d =
+			(this.radius / 2) ** 2 -
+			(this.x - mouseX()) ** 2 +
+			(this.y - mouseY()) ** 2;
+		if (d >= 0) {
 			this.dragging = true;
-			this.offsetX = this.x - mouseX;
-			this.offsetY = this.y - mouseY;
+			this.offsetX = this.x - mouseX();
+			this.offsetY = this.y - mouseY();
 		}
 	}
 
-	released(){
+	released() {
 		this.dragging = false;
 	}
 }
 
-class Ruler {
+export class Ruler {
 	constructor({
-    shown = false,
-    mainx = canvasWidth()/2,
-    mainy = canvasHeight()/2,
-    shape1 = new Draggable(mainx - (mainx/2), mainy - (mainy/2), 20, 20),
-    shape2 = new Draggable(mainx + (mainx/2), mainy + (mainy/2), 20, 20),
-  } = {}) {
+		shown = false,
+		mainx = canvasWidth() / 2,
+		mainy = canvasHeight() / 2,
+		shape1 = new Draggable(mainx - mainx / 2, mainy - mainy / 2, 10),
+		shape2 = new Draggable(mainx + mainx / 2, mainy + mainy / 2, 10),
+	} = {}) {
 		this.mainx = mainx;
 		this.mainy = mainy;
 		this.shape1 = shape1;
 		this.shape2 = shape2;
 		this.shown = shown;
-  }
+	}
 
-	draw(){
-		this.shape1.mousedOver()
-		this.shape1.update()
-		this.shape1.draw()
-		this.shape2.mousedOver()
-		this.shape2.update()
-		this.shape2.draw()
+	draw() {
+		// TODO: put back
+		this.shape1.mousedOver();
+		this.shape1.update();
+		canvasScope(() => {
+			this.shape1.draw();
+		});
+		this.shape2.mousedOver();
+		this.shape2.update();
+		canvasScope(() => {
+			this.shape2.draw();
+		});
+		ctx.fillStyle = "rgb(175, 200, 0)";
+		// fill(175, 200);
+		ctx.strokeStyle = "rgb(255, 255, 255)";
 
-		fill(175, 200);
-		stroke(225)
-		line((this.shape1.x), (this.shape1.y), (this.shape2.x), (this.shape2.y));
-		rect((this.shape1.x + this.shape2.x)/2,(this.shape1.y + this.shape2.y)/2-20, 50, 20)
-		let dist = (parseInt(sqrt(pow(this.shape1.x - this.shape2.x,2)+pow(this.shape1.y - this.shape2.y,2))))
-		fill(0)
-		textSize(16)
-		text(String(dist),(this.shape1.x + this.shape2.x)/2-15,(this.shape1.y + this.shape2.y)/2-15)
+		const coord1 = pixelsToCoord(new Vector(this.shape1.x, this.shape1.y));
+		const coord2 = pixelsToCoord(new Vector(this.shape2.x, this.shape2.y));
+
+		line(coord1, coord2);
+		// line((this.shape1.x), (this.shape1.y), (this.shape2.x), (this.shape2.y));
+		rect(coord1.add(coord2).div(2), pixelsToDist(50), pixelsToDist(50));
+		// rect((this.shape1.x + this.shape2.x)/2,(this.shape1.y + this.shape2.y)/2-20, 50, 20)
+		let dist = parseInt(
+			Math.sqrt(
+				Math.pow(this.shape1.x - this.shape2.x, 2) +
+					Math.pow(this.shape1.y - this.shape2.y, 2)
+			)
+		);
+		ctx.fillStyle = "rgb(0, 0, 0)";
+		// fill(0)
+		ctx.font = "16px Arial";
+		// textSize(16)
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+		const { x, y } = coordToPixels(coord1.add(coord2).div(2));
+		ctx.fillText(dist.toString(), x, y);
+		// text(String(dist),(this.shape1.x + this.shape2.x)/2-15,(this.shape1.y + this.shape2.y)/2-15)
 	}
 }

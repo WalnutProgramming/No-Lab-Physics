@@ -1,61 +1,77 @@
+import {
+	canvasHeight,
+	canvasWidth,
+	ctx,
+	recordMousePos,
+	canvasScope,
+} from "./canvas.js";
+import { distToPixels } from "./coordTransforms.js";
+import { random } from "./helpers.js";
+import { BoxMover, CircleMover, Ruler } from "./objects.js";
+import Vector from "./vector.js";
+import {
+	getManifold,
+	positionalCorrection,
+	resolveCollision,
+} from "./collisions.js";
+import { deserialize, serialize } from "./serialization.js";
+import { cloneDeep } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1PSWaO3mr3KWqgK/min/lodash-es.js";
+
 let isMouseBeingPressed = false;
-let canvas;
+// let canvas;
 
 const getInitialState = () => ({
 	allObjects: [
-		new CircleMover({ loc: createVector(random(canvasWidth()), 0.25 * canvasHeight()) }),
+		new CircleMover({
+			loc: new Vector(random(canvasWidth()), 0.25 * canvasHeight()),
+		}),
 		new CircleMover(),
-		new BoxMover({ loc: createVector(random(canvasWidth()), 0.75 * canvasHeight()) }),
+		new BoxMover({
+			loc: new Vector(random(canvasWidth()), 0.75 * canvasHeight()),
+		}),
 		// floor
-		new BoxMover({ 
-			loc: createVector(canvasWidth()/2, canvasHeight()), 
-			width, 
+		new BoxMover({
+			loc: new Vector(canvasWidth() / 2, canvasHeight()),
+			width: canvasWidth(),
 			height: 10,
 			hasGravity: false,
-			mass: Infinity
+			mass: Infinity,
 		}),
 		// ceiling
-		new BoxMover({ 
-			loc: createVector(canvasWidth()/2, 0), 
-			width, 
+		new BoxMover({
+			loc: new Vector(canvasWidth() / 2, 0),
+			width: canvasWidth(),
 			height: 10,
 			hasGravity: false,
-			mass: Infinity
+			mass: Infinity,
 		}),
 		// left wall
-		new BoxMover({ 
-			loc: createVector(0, canvasHeight()/2), 
-			height, 
+		new BoxMover({
+			loc: new Vector(0, canvasHeight() / 2),
+			height: canvasHeight(),
 			width: 10,
 			hasGravity: false,
-			mass: Infinity
+			mass: Infinity,
 		}),
 		// right wall
-		new BoxMover({ 
-			loc: createVector(canvasWidth(), canvasHeight()/2), 
-			height, 
+		new BoxMover({
+			loc: new Vector(canvasWidth(), canvasHeight() / 2),
+			height: canvasHeight(),
 			width: 10,
 			hasGravity: false,
-			mass: Infinity
+			mass: Infinity,
 		}),
 	],
 	paused: false,
-	ruler: new Ruler()
-})
+	ruler: new Ruler(),
+});
 
-function setup() {
-	canvas = createCanvas(canvasWidthPixels(), canvasHeightPixels());
-	// canvas.position(0, 0)
-	
-	// Move canvas into the #put-canvas-here element
-	document.getElementById('put-canvas-here').appendChild(document.querySelector('.p5Canvas'))
-
-	state = getStateFromUrlHash() ?? getInitialState();
-}
+// let state = /*getStateFromUrlHash() ??*/ getInitialState();
+let state;
 
 //handles collisions between objects (but not walls)
-function handleCollisions() {
-	const { allObjects } = state
+function handleCollisions(state) {
+	const { allObjects } = state;
 	// loop through every pair of objects
 	for (let index1 = 0; index1 < allObjects.length; index1++) {
 		for (let index2 = index1 + 1; index2 < allObjects.length; index2++) {
@@ -73,41 +89,108 @@ function handleCollisions() {
 	}
 }
 
-//loops "constantly" to apply forces and have objects draw themselves
-function draw() {
-
-	background(0);
-
-	//for each object in the array of them (m)
-	state.allObjects.forEach(e => {
-		if(!state.paused){ 
+function update(state) {
+	//for each object in the array of them
+	state.allObjects.forEach((e) => {
+		if (!state.paused) {
 			if (e.hasGravity) {
-				//apply a abitrary gravity 
-				let gravity = createVector(0,0.3);
+				//apply a abitrary gravity
+				let gravity = new Vector(0, 0.3);
 				//gravity not based on mass so multiply it so it will be divided out later
-				gravity.mult(e.mass);
+				gravity = gravity.mult(e.mass);
 				e.applyForce(gravity);
 			}
 
 			//if mouse is pressed (see mousePressed and mouseReleased) apply wind
 			// if(isMouseBeingPressed){
-			// 	let wind = createVector(0.2,0);
-			// 	e.applyForce(wind);	
+			// 	let wind = new Vector(0.2,0);
+			// 	e.applyForce(wind);
 			// }
 
 			friction(e, -0.05);
 
 			e.update();
 		}
-		e.show();
 	});
 
-	if(state.ruler.shown){
-		state.ruler.draw()
-	}
-
-	handleCollisions();
+	handleCollisions(state);
 }
+
+//loops "constantly" to apply forces and have objects draw themselves
+function draw() {
+	// console.log(deserialize(serialize(state)))
+	canvasScope(() => {
+		ctx.clearRect(
+			0,
+			0,
+			distToPixels(canvasWidth()),
+			distToPixels(canvasHeight())
+		);
+		ctx.fillRect(
+			0,
+			0,
+			distToPixels(canvasWidth()),
+			distToPixels(canvasHeight())
+		);
+
+		state.allObjects.forEach((e) => {
+			if (!state.paused) {
+				canvasScope(() => {
+					e.draw();
+				});
+			}
+		});
+
+		if (state.ruler.shown) {
+			canvasScope(() => {
+				state.ruler.draw();
+			});
+		}
+	});
+}
+
+console.log("start");
+const states = [getInitialState()];
+function generateNextState() {
+	const lastState = cloneDeep(states[states.length - 1]);
+	update(lastState);
+	states.push(lastState);
+}
+while (states.length < 60 * 60 * 0.5) generateNextState();
+console.log("done");
+document.getElementById("loading-experiment").innerHTML = "";
+
+const timeSlider = document.getElementById("time-slider");
+timeSlider.value = 0;
+
+let statesInd = 0;
+function showTime() {
+	const seconds = statesInd / 60;
+	const secondsFloored = Math.floor(seconds);
+	const secondsFlooredStr = secondsFloored.toString().padStart(3, "0");
+	const milliseconds = Math.floor((seconds % 1) * 1000);
+	const millisecondsStr = milliseconds.toString().padStart(3, "0");
+	document.getElementById(
+		"time"
+	).innerText = `${secondsFlooredStr}:${millisecondsStr}`;
+}
+
+setInterval(() => {
+	if (states.length - statesInd < 60) {
+		for (let i = 0; i < 60 * 20; i++) generateNextState();
+	}
+	statesInd++;
+	showTime();
+	timeSlider.value = statesInd / states.length;
+	state = states[statesInd];
+	draw();
+}, 1000 / 60);
+timeSlider.addEventListener("input", () => {
+	statesInd = Math.floor(timeSlider.value * states.length);
+	showTime();
+});
+
+// draw();
 
 /* Friction
 	
@@ -138,36 +221,37 @@ function draw() {
 	You can then apply friction with the applyForce function
 */
 //mov is the mover object we want to apply friction to and c is the coefficient of friction
-function friction(mov, c){
-	let f = mov.getVel();
-	f.normalize();
-	f.mult(c);
+function friction(mov, c) {
+	const f = mov.vel.normalize().mult(c);
 	mov.applyForce(f);
 }
 
-function mousePressed() {
-	console.log(state.ruler)
+window.addEventListener("mousedown", (e) => {
+	recordMousePos(e);
 	state.ruler.shape1.pressed();
- 	state.ruler.shape2.pressed();
-}
+	state.ruler.shape2.pressed();
+});
 
-function mouseReleased() {
+window.addEventListener("mouseup", (e) => {
+	recordMousePos(e);
 	state.ruler.shape1.released();
 	state.ruler.shape2.released();
-}
+});
 
-function pause(){
+window.addEventListener("mousemove", (e) => {
+	recordMousePos(e);
+	state.ruler.shape1.mousedOver();
+	state.ruler.shape2.mousedOver();
+});
+
+window.pause = () => {
 	state.paused = !state.paused;
-}
+};
 
-function restart(){
+window.restart = () => {
 	state = getInitialState();
-}
+};
 
-function toggleRuler(){
+window.toggleRuler = () => {
 	state.ruler.shown = !state.ruler.shown;
-}
-
-function windowResized() {
-	resizeCanvas(canvasWidthPixels(), canvasHeightPixels());
-}
+};
