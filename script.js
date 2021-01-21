@@ -267,8 +267,6 @@ window.addEventListener("mouseup", (e) => {
 
 window.addEventListener("mousemove", (e) => {
 	recordMousePos(e);
-	userState.ruler.shape1.mousedOver();
-	userState.ruler.shape2.mousedOver();
 });
 
 window.pause = () => {

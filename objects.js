@@ -124,16 +124,12 @@ export class Draggable {
 		return new Draggable(x, y, radius);
 	}
 
-	mousedOver() {
+	get isMouseOver() {
 		let d =
-			(this.radius / 2) ** 2 -
-			(this.x - mouseX()) ** 2 +
-			(this.y - mouseY()) ** 2;
-		if (d >= 0) {
-			this.rollover = true;
-		} else {
-			this.rollover = false;
-		}
+			(this.radius) ** 2 -
+			((this.x - mouseX()) ** 2 +
+			(this.y - mouseY()) ** 2);
+		return d >= 0;
 	}
 
 	update() {
@@ -151,7 +147,7 @@ export class Draggable {
 		ctx.strokeStyle = "rgb(0, 0, 0)";
 		if (this.dragging) {
 			ctx.fillStyle = "rgb(50, 50, 50)";
-		} else if (this.rollover) {
+		} else if (this.isMouseOver) {
 			ctx.fillStyle = "rgb(100, 100, 100)";
 		} else {
 			// fill(175, 200);
@@ -161,11 +157,7 @@ export class Draggable {
 	}
 
 	pressed() {
-		let d =
-			(this.radius / 2) ** 2 -
-			(this.x - mouseX()) ** 2 +
-			(this.y - mouseY()) ** 2;
-		if (d >= 0) {
+		if (this.isMouseOver) {
 			this.dragging = true;
 			this.offsetX = this.x - mouseX();
 			this.offsetY = this.y - mouseY();
@@ -193,13 +185,10 @@ export class Ruler {
 	}
 
 	draw() {
-		// TODO: put back
-		this.shape1.mousedOver();
 		this.shape1.update();
 		canvasScope(() => {
 			this.shape1.draw();
 		});
-		this.shape2.mousedOver();
 		this.shape2.update();
 		canvasScope(() => {
 			this.shape2.draw();
