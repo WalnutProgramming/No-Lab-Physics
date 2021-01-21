@@ -62,12 +62,15 @@ const getInitialState = () => ({
 			mass: Infinity,
 		}),
 	],
-	paused: false,
-	ruler: new Ruler(),
 });
 
 // let state = /*getStateFromUrlHash() ??*/ getInitialState();
 let state;
+
+let userState = {
+	paused: false,
+	ruler: new Ruler(),
+};
 
 //handles collisions between objects (but not walls)
 function handleCollisions(state) {
@@ -92,7 +95,7 @@ function handleCollisions(state) {
 function update(state) {
 	//for each object in the array of them
 	state.allObjects.forEach((e) => {
-		if (!state.paused) {
+		if (!userState.paused) {
 			if (e.hasGravity) {
 				//apply a abitrary gravity
 				let gravity = new Vector(0, 0.3);
@@ -134,16 +137,14 @@ function draw() {
 		);
 
 		state.allObjects.forEach((e) => {
-			if (!state.paused) {
-				canvasScope(() => {
-					e.draw();
-				});
-			}
+			canvasScope(() => {
+				e.draw();
+			});
 		});
 
-		if (state.ruler.shown) {
+		if (userState.ruler.shown) {
 			canvasScope(() => {
-				state.ruler.draw();
+				userState.ruler.draw();
 			});
 		}
 	});
@@ -179,9 +180,11 @@ setInterval(() => {
 	if (states.length - statesInd < 60) {
 		for (let i = 0; i < 60 * 20; i++) generateNextState();
 	}
-	statesInd++;
-	showTime();
-	timeSlider.value = statesInd / states.length;
+	if (!userState.paused) {
+		statesInd++;
+		showTime();
+		timeSlider.value = statesInd / states.length;
+	}
 	state = states[statesInd];
 	draw();
 }, 1000 / 60);
@@ -228,24 +231,24 @@ function friction(mov, c) {
 
 window.addEventListener("mousedown", (e) => {
 	recordMousePos(e);
-	state.ruler.shape1.pressed();
-	state.ruler.shape2.pressed();
+	userState.ruler.shape1.pressed();
+	userState.ruler.shape2.pressed();
 });
 
 window.addEventListener("mouseup", (e) => {
 	recordMousePos(e);
-	state.ruler.shape1.released();
-	state.ruler.shape2.released();
+	userState.ruler.shape1.released();
+	userState.ruler.shape2.released();
 });
 
 window.addEventListener("mousemove", (e) => {
 	recordMousePos(e);
-	state.ruler.shape1.mousedOver();
-	state.ruler.shape2.mousedOver();
+	userState.ruler.shape1.mousedOver();
+	userState.ruler.shape2.mousedOver();
 });
 
 window.pause = () => {
-	state.paused = !state.paused;
+	userState.paused = !userState.paused;
 };
 
 window.restart = () => {
@@ -253,5 +256,5 @@ window.restart = () => {
 };
 
 window.toggleRuler = () => {
-	state.ruler.shown = !state.ruler.shown;
+	userState.ruler.shown = !userState.ruler.shown;
 };
