@@ -178,7 +178,7 @@ function showTime() {
 	const millisecondsStr = milliseconds.toString().padStart(3, "0");
 	document.getElementById(
 		"time"
-	).innerText = `${secondsFlooredStr}:${millisecondsStr}`;
+	).innerText = `${secondsFlooredStr}.${millisecondsStr}`;
 }
 
 setInterval(() => {
