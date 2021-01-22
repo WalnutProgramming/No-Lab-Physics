@@ -17,9 +17,6 @@ import {
 import { getStateFromUrlHash, getSerializedUrl } from "./serialization.js";
 import { cloneDeep } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1PSWaO3mr3KWqgK/min/lodash-es.js";
 
-let isMouseBeingPressed = false;
-// let canvas;
-
 const getInitialState = () => ({
 	allObjects: [
 		new CircleMover({
