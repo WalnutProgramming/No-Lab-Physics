@@ -6,31 +6,33 @@ html,
 body,
 main,
 #put-canvas-here,
+#canvas-container-container,
 canvas {
   margin: 0;
   padding: 0;
   border: 0;
-  
 }
 
 canvas {
   display: block;
 }
 
-html, body, main, #put-canvas-here {
+html, body, main, #canvas-container-container, #put-canvas-here {
   width: 100%; 
   height: 100%;
 }
 
-#put-canvas-here {
-  height: 85%
+#canvas-container-container {
+  display: flex;
+  justify-content: center;
 }
 
-/* Center child vertically and horizontally */
 #put-canvas-here {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  --aspect-ratio: calc(16 / 9);
+  --width: min(90vw, 80vh * var(--aspect-ratio));
+  /* --width: calc(80vh * var(--aspect-ratio)); */
+  width: var(--width);
+  height: calc(var(--width) / (16 / 9));
 }
 
 main.regular-page {
