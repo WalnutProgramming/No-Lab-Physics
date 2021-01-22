@@ -61,8 +61,6 @@ const getInitialState = () => ({
 	],
 });
 
-let state;
-
 let userState = {
 	paused: false,
 	ruler: new Ruler(),
@@ -116,7 +114,7 @@ function update(state) {
 }
 
 //loops "constantly" to apply forces and have objects draw themselves
-function draw() {
+function draw(state) {
 	// console.log(deserialize(serialize(state)))
 	canvasScope(() => {
 		ctx.clearRect(
@@ -146,29 +144,26 @@ function draw() {
 	});
 }
 
-console.log("start");
 let states;
-let statesInd;
+let stateInd;
+
 function generateNextState() {
 	const lastState = cloneDeep(states[states.length - 1]);
 	update(lastState);
 	states.push(lastState);
 }
 function resetAndRandomizeStates() {
+	stateInd = 0;
 	states = [getStateFromUrlHash() ?? getInitialState()]
-	statesInd = 0;
+	userState.paused = false;
 	while (states.length < 60 * 60 * 0.5) generateNextState();
 }
 window.restart = resetAndRandomizeStates;
 resetAndRandomizeStates();
-console.log("done");
 document.getElementById("loading-experiment").innerHTML = "";
 
-const timeSlider = document.getElementById("time-slider");
-timeSlider.value = 0;
-
 function showTime() {
-	const seconds = statesInd / 60;
+	const seconds = stateInd / 60;
 	const secondsFloored = Math.floor(seconds);
 	const secondsFlooredStr = secondsFloored.toString().padStart(3, "0");
 	const milliseconds = Math.floor((seconds % 1) * 1000);
@@ -176,22 +171,24 @@ function showTime() {
 	document.getElementById(
 		"time"
 	).innerText = `${secondsFlooredStr}.${millisecondsStr}`;
+
+	timeSlider.value = stateInd / states.length;
 }
 
+const timeSlider = document.getElementById("time-slider");
+timeSlider.value = 0;
 setInterval(() => {
-	if (states.length - statesInd < 60) {
+	if (states.length - stateInd < 60) {
 		for (let i = 0; i < 60 * 20; i++) generateNextState();
 	}
 	if (!userState.paused) {
-		statesInd++;
-		showTime();
-		timeSlider.value = statesInd / states.length;
+		stateInd++;
 	}
-	state = states[statesInd];
-	draw();
+	showTime();
+	draw(states[stateInd]);
 }, 1000 / 60);
 timeSlider.addEventListener("input", () => {
-	statesInd = Math.floor(timeSlider.value * states.length);
+	stateInd = Math.floor(timeSlider.value * states.length);
 	showTime();
 });
 
