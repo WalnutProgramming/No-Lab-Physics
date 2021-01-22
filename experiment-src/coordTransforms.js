@@ -1,6 +1,6 @@
 import Vector from "./vector.js";
 
-// top right position of canvas in pixels
+// top left position of canvas in pixels
 export const pixelOffset = () => new Vector(0, 0);
 // ratio of pixels to original
 export const pixelScale = () => 1;
