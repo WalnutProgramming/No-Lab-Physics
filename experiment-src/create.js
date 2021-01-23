@@ -73,7 +73,7 @@ createApp({
 				<div>
 					<button type="button" @click="addObject">Add object</button>
 				</div>
-				<button type="button" @click="removeObject(object.id)">
+				<button v-if="isObjectSelected" type="button" @click="removeObject(initialState.allObjects[selectedObjectIndex].id)">
 					Remove this object
 				</button>
 				<mover-form
