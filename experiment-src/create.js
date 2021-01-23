@@ -211,6 +211,6 @@ start({
 });
 watch(
 	initialState,
-	throttle(() => window.restart(false), 100),
+	throttle(() => window.restart(false), 16),
 	{ deep: true }
 );
