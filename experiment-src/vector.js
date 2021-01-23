@@ -1,6 +1,6 @@
 // @ts-check
 
-import classNameKey from "./classNameKey.js";
+import serializationClassNameKey from "./serializationClassNameKey.js";
 
 // from https://github.com/evanw/lightgl.js/blob/master/src/vector.js
 /* @license for this file:
@@ -34,7 +34,7 @@ export default class Vector {
 
 	toJSON() {
 		return {
-			[classNameKey]: "Vector",
+			[serializationClassNameKey]: "Vector",
 			a: this.toArray(),
 		};
 	}
