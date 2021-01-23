@@ -80,12 +80,6 @@ export default function start({
 	function draw(state) {
 		// console.log(deserialize(serialize(state)))
 		canvasScope(() => {
-			ctx.clearRect(
-				0,
-				0,
-				distToPixels(canvasWidth()),
-				distToPixels(canvasHeight())
-			);
 			ctx.fillRect(
 				0,
 				0,
