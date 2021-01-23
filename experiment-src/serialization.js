@@ -56,7 +56,7 @@ function serialize(state) {
  * @param {string} json A JSON string generated with serialize.
  * @returns the state object
  */
-function deserialize(json) {
+export function deserialize(json) {
 	return JSON.parse(json, (_key, value) => {
 		if (value === "$number::Infinity") return Infinity;
 		if (value === "$number::-Infinity") return -Infinity;
