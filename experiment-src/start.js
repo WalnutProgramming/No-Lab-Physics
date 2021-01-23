@@ -17,10 +17,14 @@ import {
 import { getSerializedUrl } from "./serialization.js";
 import { cloneDeep } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1PSWaO3mr3KWqgK/min/lodash-es.js";
 
+// 60 frames per second
+const fps = 60;
+
 export default function start({
 	getInitialState,
 	getSelectedIds = () => [],
 	onObjectSelected = () => {},
+	isCreating = false,
 }) {
 	let userState = {
 		paused: false,
@@ -118,11 +122,29 @@ export default function start({
 			userState.paused = false;
 		}
 		states = [getInitialState()];
-		while (states.length < 60 * 30) generateNextState();
+
+		if (!(isCreating && userState.paused)) {
+			// precalculate states
+			const startTime = Date.now();
+			const maxFramesToPrecalculate = isCreating ? 2 * fps : 30 * fps;
+			const maxTimeToPrecalculate = isCreating ? 14 : 100;
+			while (
+				states.length < maxFramesToPrecalculate &&
+				Date.now() - startTime < maxTimeToPrecalculate
+			) {
+				generateNextState();
+			}
+		}
 	}
 	window.restart = resetAndRandomizeStates;
 	resetAndRandomizeStates();
 	document.getElementById("loading-experiment").innerHTML = "";
+
+	let maxFrameReached = 1;
+	function sliderFrameLength() {
+		const interval = 30 * fps;
+		return Math.ceil((maxFrameReached + 1 * fps) / interval) * interval;
+	}
 
 	function showTime() {
 		const seconds = stateInd / 60;
@@ -134,14 +156,18 @@ export default function start({
 			"time"
 		).innerText = `${secondsFlooredStr}.${millisecondsStr}`;
 
-		timeSlider.value = stateInd / states.length;
+		timeSlider.value = stateInd / sliderFrameLength();
 	}
 
 	const timeSlider = document.getElementById("time-slider");
 	timeSlider.value = 0;
 	setInterval(() => {
-		if (states.length - stateInd < 60) {
-			for (let i = 0; i < 60 * 20; i++) generateNextState();
+		maxFrameReached = Math.max(maxFrameReached, stateInd);
+		if (states.length - stateInd < 10 * fps) {
+			for (let i = 0; i < 3; i++)	generateNextState();
+		}
+		while (states.length - stateInd < 0.2 * fps) {
+			generateNextState();
 		}
 		if (!userState.paused) {
 			stateInd++;
@@ -150,7 +176,7 @@ export default function start({
 		draw(states[stateInd]);
 	}, 1000 / 60);
 	timeSlider.addEventListener("input", () => {
-		stateInd = Math.floor(timeSlider.value * states.length);
+		stateInd = Math.floor(timeSlider.value * sliderFrameLength());
 		showTime();
 	});
 
@@ -224,13 +250,14 @@ export default function start({
 	});
 
 	window.addEventListener("click", () => {
+		if (stateInd >= states.length) return
 		const mousePos = pixelsToCoord(getMousePos());
 		for (const object of states[stateInd].allObjects) {
 			if (object.containsPoint(mousePos)) {
 				onObjectSelected(object.id);
 			}
 		}
-	})
+	});
 
 	window.addEventListener("mousemove", (e) => {
 		recordMousePos(e);

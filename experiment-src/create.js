@@ -207,6 +207,7 @@ start({
 	onObjectSelected(id) {
 		selectedObjectId.value = id;
 	},
+	isCreating: true,
 });
 watch(
 	initialState,
