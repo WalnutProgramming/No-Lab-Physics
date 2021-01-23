@@ -1,5 +1,7 @@
 // @ts-check
 
+import classNameKey from "./classNameKey.js";
+
 // from https://github.com/evanw/lightgl.js/blob/master/src/vector.js
 /* @license for this file:
 Copyright (C) 2011 by Evan Wallace
@@ -32,7 +34,7 @@ export default class Vector {
 
 	toJSON() {
 		return {
-			$className: "Vector",
+			[classNameKey]: "Vector",
 			a: this.toArray(),
 		};
 	}

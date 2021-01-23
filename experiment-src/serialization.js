@@ -1,5 +1,6 @@
 import Vector from "./vector.js";
 import { Mover, BoxMover, CircleMover, Ruler, Draggable } from "./objects.js";
+import classNameKey from "./classNameKey.js";
 
 /** The classes that can be serialized and deserialized */
 export const classes = {
@@ -18,7 +19,7 @@ export const classes = {
  *    - implement a static fromJSON() method
  *    - accept the object containing its properties as the first argument of its constructor
  * 3. (optional) may implement a toJSON() method. If implemented, one of the property must
- *    be '$className', which is the name of the class as a string. If not implemented,
+ *    be the classNameKey (above), and the value must be the name of the class as a string. If not implemented,
  *    all of the properties of the object will be serialized.
  * @param {*} state the state object
  * @returns a JSON string
@@ -33,7 +34,7 @@ function serialize(state) {
 			value?.constructor?.name &&
 			Object.keys(classes).includes(value.constructor.name)
 		) {
-			return { ...value, $className: value.constructor.name };
+			return { ...value, [classNameKey]: value.constructor.name };
 		}
 		if (
 			typeof value === "object" &&
@@ -61,9 +62,11 @@ function deserialize(json) {
 		if (value === "$number::-Infinity") return -Infinity;
 		if (value === "$number::NaN") return NaN;
 		if (typeof value === "object" && value != null) {
-			const className = value.$className;
+			// TODO: Delete this later. This is only for backwards compatibility
+			// because the classNameKey used to be $className.
+			const className = value[classNameKey] ?? value.$className;
 			if (Object.keys(classes).includes(className)) {
-				delete value.$className;
+				delete value[classNameKey];
 				const theClass = classes[className];
 				if (theClass.fromJSON) {
 					return theClass.fromJSON(value);
