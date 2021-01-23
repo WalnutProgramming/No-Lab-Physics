@@ -180,21 +180,20 @@ export default function start({
 		showTime();
 	});
 
-	const clipboard = new ClipboardJS("#copy-link", {
-		text: () => getSerializedUrl(states[0]),
-	});
-
 	const copyLinkToolTip = document.getElementById("copy-link-tooltip");
-	clipboard.on("success", () => {
-		copyLinkToolTip.textContent = "Copied!";
-		setTimeout(() => {
-			copyLinkToolTip.textContent = "";
-		}, 2000);
-	});
-	clipboard.on("error", () => {
-		copyLinkToolTip.textContent =
-			"Failed to copy. Here is the URL for you to copy manually: " +
-			getSerializedUrl(states[0]);
+	document.getElementById("copy-link").addEventListener("click", async () => {
+		const text = getSerializedUrl(states[0]);
+		try {
+			await navigator.clipboard.writeText(text);
+			copyLinkToolTip.textContent = "Copied!";
+			setTimeout(() => {
+				copyLinkToolTip.textContent = "";
+			}, 2000);
+		} catch (e) {
+			copyLinkToolTip.textContent =
+				"Failed to copy. Here is the URL for you to copy manually: " +
+				getSerializedUrl(states[0]);
+		}
 	});
 
 	window.addEventListener("hashchange", () => {
