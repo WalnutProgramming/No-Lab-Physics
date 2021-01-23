@@ -45,11 +45,14 @@ export function canvasScope(func) {
  * @param {number} widthOrig
  * @param {number} heightOrig
  */
-export function rect(centerOrig, widthOrig, heightOrig) {
+export function rect(centerOrig, widthOrig, heightOrig, { fill = true, stroke = false } = {}) {
 	const { x, y } = coordToPixels(centerOrig);
 	const width = distToPixels(widthOrig);
 	const height = distToPixels(heightOrig);
-	ctx.fillRect(x - width / 2, y - height / 2, width, height);
+	ctx.beginPath();
+	ctx.rect(x - width / 2, y - height / 2, width, height);
+	if (fill) ctx.fill();
+	if (stroke) ctx.stroke();
 }
 
 /**
@@ -57,12 +60,13 @@ export function rect(centerOrig, widthOrig, heightOrig) {
  * @param {Vector} centerOrig
  * @param {number} radiusOrig
  */
-export function circle(centerOrig, radiusOrig) {
+export function circle(centerOrig, radiusOrig, { fill = true, stroke = false } = {}) {
 	const { x, y } = coordToPixels(centerOrig);
 	const radius = distToPixels(radiusOrig);
 	ctx.beginPath();
 	ctx.arc(x, y, radius, 0, 2 * Math.PI);
-	ctx.fill();
+	if (fill) ctx.fill();
+	if (stroke) ctx.stroke();
 }
 
 /**

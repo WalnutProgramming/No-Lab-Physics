@@ -2,7 +2,7 @@ import Vector from "./vector.js";
 import { Mover, BoxMover, CircleMover, Ruler, Draggable } from "./objects.js";
 
 /** The classes that can be serialized and deserialized */
-const classes = {
+export const classes = {
 	Vector,
 	Mover,
 	BoxMover,
@@ -91,6 +91,10 @@ export function getStateFromUrlHash() {
 		console.error("failed to deserialize", e);
 		return null;
 	}
+}
+
+export function clone(state) {
+	return deserialize(serialize(state));
 }
 
 export function getSerializedUrl(state) {

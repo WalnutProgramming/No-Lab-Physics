@@ -110,6 +110,9 @@ export default class Vector {
 	clone() {
 		return new Vector(this.x, this.y, this.z);
 	}
+	distanceTo(/** @type {Vector} */ vec) {
+		return this.subt(vec).magnitude();
+	}
 
 	static fromAngles(/** @type {number} */ theta, /** @type {number} */ phi) {
 		return new Vector(

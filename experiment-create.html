@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script type="module" src="./navbar.js"></script>
+
+<script src="https://unpkg.com/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<!-- <script defer src="./experiment-src/index.js" type="module"></script> -->
+<script defer src="./experiment-src/create.js" type="module"></script>
+
+<link rel="stylesheet" href="style.css">
+
+<physics-navbar></physics-navbar>
+
+<main>
+  <div style="display: flex">
+    <button id="pause" onclick="pause()">Pause/Play</button>
+    <button id="restart" onclick="restart()">Restart</button>
+    <button id="ruler" onclick="toggleRuler()">Ruler</button>
+    <button id="copy-link">Copy link</button>
+    <span id="loading-experiment" style="margin-right: 1em">Loading experiment...</span>
+    <pre id="time"></pre>
+    <span id="copy-link-tooltip"></span>
+    <input id="time-slider" type="range" min="0" max="1" step="any" style="width: 100%" value="0" />
+  </div>
+  <div style="display: flex;">
+    <div id="put-canvas-here">
+      <canvas></canvas>
+    </div>
+    <div id="vue-app">Loading...</div>
+  </div>
+</main>

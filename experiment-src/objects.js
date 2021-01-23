@@ -11,9 +11,11 @@ import {
 } from "./canvas.js";
 import {
 	coordToPixels,
+	distToPixels,
 	pixelsToCoord,
 	pixelsToDist,
 } from "./coordTransforms.js";
+import { nanoid } from "https://unpkg.com/nanoid@3.1.20/nanoid.js";
 import { random } from "./helpers.js";
 import Vector from "./vector.js";
 
@@ -25,12 +27,14 @@ export class Mover {
 		vel = new Vector(0, 0),
 		acc = new Vector(0, 0),
 		hasGravity = true,
+		id = nanoid(),
 	}) {
 		this.mass = mass;
 		this.loc = loc;
 		this.vel = vel;
 		this.acc = acc;
 		this.hasGravity = hasGravity;
+		this.id = id;
 	}
 
 	//divides the force by the objects mass then adds to acceleration
@@ -68,30 +72,51 @@ export class BoxMover extends Mover {
 		this.height = height;
 	}
 
-	draw() {
+	draw(isSelected = false) {
 		ctx.fillStyle = "rgb(255, 255, 255)";
-		rect(this.loc, this.width, this.height);
+		ctx.strokeStyle = "blue";
+		ctx.lineWidth = distToPixels(4);
+		rect(this.loc, this.width, this.height, { stroke: isSelected });
+	}
+
+	containsPoint(point) {
+		if (this.mass < Infinity) {
+			window.point = point;
+			window.x = this.x;
+			window.y = this.y;
+			window.height = this.height;
+			window.width = this.width;
+		}
+		if (point.x < this.x - this.width / 2) return false;
+		if (point.x > this.x + this.width / 2) return false;
+		if (point.y < this.y - this.height / 2) return false;
+		if (point.y > this.y + this.height / 2) return false;
+		return true;
 	}
 }
 
 export class CircleMover extends Mover {
 	constructor(options = {}) {
 		super(options);
-	}
-
-	get radius() {
-		return this.mass * 10;
+		const { radius = this.mass * 10 } = options;
+		this.radius = radius;
 	}
 
 	get diameter() {
 		return this.radius * 2;
 	}
 
+	set diameter(newDiameter) {
+		this.radius = newDiameter / 2;
+	}
+
 	//draws the spheres on the canvas
-	draw() {
+	draw(isSelected = false) {
 		ctx.fillStyle = "rgb(255, 255, 255)";
 
-		circle(this.loc, this.radius);
+		ctx.strokeStyle = "blue";
+		ctx.lineWidth = distToPixels(6);
+		circle(this.loc, this.radius, { stroke: isSelected });
 	}
 
 	get min() {
@@ -106,6 +131,10 @@ export class CircleMover extends Mover {
 			x: this.x + this.radius,
 			y: this.y + this.radius,
 		};
+	}
+
+	containsPoint(point) {
+		return this.loc.distanceTo(point) <= this.radius;
 	}
 }
 
