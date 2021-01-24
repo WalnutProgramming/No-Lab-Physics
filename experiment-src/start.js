@@ -5,6 +5,7 @@ import {
 	recordMousePos,
 	canvasScope,
 	getMousePos,
+	canvas,
 } from "./canvas.js";
 import { distToPixels, pixelsToCoord } from "./coordTransforms.js";
 import { Ruler } from "./objects.js";
@@ -230,19 +231,19 @@ export default function start({
 		mov.applyForce(f);
 	}
 
-	window.addEventListener("mousedown", (e) => {
+	canvas.addEventListener("mousedown", (e) => {
 		recordMousePos(e);
 		userState.ruler.shape1.pressed();
 		userState.ruler.shape2.pressed();
 	});
 
-	window.addEventListener("mouseup", (e) => {
+	canvas.addEventListener("mouseup", (e) => {
 		recordMousePos(e);
 		userState.ruler.shape1.released();
 		userState.ruler.shape2.released();
 	});
 
-	window.addEventListener("click", () => {
+	canvas.addEventListener("click", () => {
 		if (stateInd >= states.length) return
 		const mousePos = pixelsToCoord(getMousePos());
 		for (const object of states[stateInd].allObjects) {
@@ -252,7 +253,7 @@ export default function start({
 		}
 	});
 
-	window.addEventListener("mousemove", (e) => {
+	canvas.addEventListener("mousemove", (e) => {
 		recordMousePos(e);
 	});
 
