@@ -2,7 +2,7 @@ import { canvasHeight, canvasWidth } from "./canvas.js";
 import { BoxMover } from "./objects.js";
 import Vector from "./vector.js";
 
-const wallWidth = 10000;
+const wallWidth = 1000000;
 
 export default function walls() {
 	return [
