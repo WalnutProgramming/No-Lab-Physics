@@ -8,7 +8,7 @@ export default function walls() {
 		new BoxMover({
 			loc: new Vector(canvasWidth() / 2, canvasHeight()),
 			width: canvasWidth(),
-			height: 10,
+			height: 40,
 			hasGravity: false,
 			mass: Infinity,
 		}),
@@ -16,7 +16,7 @@ export default function walls() {
 		new BoxMover({
 			loc: new Vector(canvasWidth() / 2, 0),
 			width: canvasWidth(),
-			height: 10,
+			height: 40,
 			hasGravity: false,
 			mass: Infinity,
 		}),
@@ -24,7 +24,7 @@ export default function walls() {
 		new BoxMover({
 			loc: new Vector(0, canvasHeight() / 2),
 			height: canvasHeight(),
-			width: 10,
+			width: 40,
 			hasGravity: false,
 			mass: Infinity,
 		}),
@@ -32,7 +32,7 @@ export default function walls() {
 		new BoxMover({
 			loc: new Vector(canvasWidth(), canvasHeight() / 2),
 			height: canvasHeight(),
-			width: 10,
+			width: 40,
 			hasGravity: false,
 			mass: Infinity,
 		}),
