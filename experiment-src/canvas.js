@@ -2,6 +2,7 @@ import {
 	coordToPixels,
 	distToPixels,
 	pixelsToDist,
+	pixelsToCoord,
 } from "./coordTransforms.js";
 import Vector from "./vector.js";
 
@@ -93,7 +94,7 @@ export function recordMousePos(/** @type {MouseEvent} */ e) {
 export function getMousePos() {
 	if (!evt) return new Vector(0, 0);
 	const rect = canvas.getBoundingClientRect();
-	return new Vector(evt.clientX - rect.left, evt.clientY - rect.top);
+	return pixelsToCoord(new Vector(evt.clientX - rect.left, evt.clientY - rect.top));
 }
 
 export function mouseX() {

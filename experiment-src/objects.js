@@ -226,8 +226,8 @@ export class Ruler {
 		// fill(175, 200);
 		ctx.strokeStyle = "rgb(255, 255, 255)";
 
-		const coord1 = pixelsToCoord(new Vector(this.shape1.x, this.shape1.y));
-		const coord2 = pixelsToCoord(new Vector(this.shape2.x, this.shape2.y));
+		const coord1 = new Vector(this.shape1.x, this.shape1.y);
+		const coord2 = new Vector(this.shape2.x, this.shape2.y);
 
 		line(coord1, coord2);
 		// line((this.shape1.x), (this.shape1.y), (this.shape2.x), (this.shape2.y));

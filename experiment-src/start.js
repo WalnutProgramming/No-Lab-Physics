@@ -261,7 +261,7 @@ export default function start({
 
 	function getObjectUnderMouse() {
 		if (stateInd >= states.length) return;
-		const mousePos = pixelsToCoord(getMousePos());
+		const mousePos = getMousePos();
 		for (const object of states[stateInd].allObjects) {
 			if (object.containsPoint(mousePos)) {
 				return object;
@@ -286,7 +286,7 @@ export default function start({
 		const object = getObjectUnderMouse();
 		if (!object) return;
 		draggedObjectId = object.id;
-		lastMousePos = pixelsToCoord(getMousePos());
+		lastMousePos = getMousePos();
 		selectObjectUnderMouse();
 	});
 
@@ -297,9 +297,9 @@ export default function start({
 		if (!draggedObjectId) return;
 		const obj = states[stateInd].allObjects.find(({ id }) => id === draggedObjectId);
 		if (!obj) return;
-		obj.loc = obj.loc.add(pixelsToCoord(getMousePos()).subt(lastMousePos));
+		obj.loc = obj.loc.add(getMousePos().subt(lastMousePos));
 		editInitialState(states[stateInd]);
-		lastMousePos = pixelsToCoord(getMousePos());
+		lastMousePos = getMousePos();
 	})
 
 	canvas.addEventListener("mouseup", (e) => {
