@@ -114,7 +114,7 @@ export async function getStateFromUrlHash() {
 
 	// See if the URL looks like JSON
 	if (decodeURI(window.location.hash).startsWith('#{')) {
-		ret = getLongStateFromUrlHash();
+		ret = getStateFromLongUrlHash();
 	} else if (window.location.hash.length > 1) {
 		// Fetch value from id
 		try {
