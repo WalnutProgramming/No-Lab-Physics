@@ -40,14 +40,13 @@ import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1P
 	} else if (window.location.hash.length > 1) {
 		// Fetch value from id
 		try {
-			const id = window.location.hash;
+			const id = window.location.hash.substring(1);
 			const res = await fetch(`/.netlify/functions/experiment-url?id=${id}`, {
 				method: "GET",
 			});
-			const text = await res.text();
-			const { state } = deserialize(text);
+			const { state } = await res.json();
 			if (state) {
-				initialState.value = state;
+				initialState.value = deserialize(JSON.stringify(state));
 			}
 		} catch (e) {
 			console.error("error fetching data: ", e);

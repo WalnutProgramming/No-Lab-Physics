@@ -14,7 +14,7 @@ import {
 	positionalCorrection,
 	resolveCollision,
 } from "./collisions.js";
-import { getSerializedUrl } from "./serialization.js";
+import { createHashUrl, getSerializedUrl, serialize } from "./serialization.js";
 import { cloneDeep } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1PSWaO3mr3KWqgK/min/lodash-es.js";
 
 // 60 frames per second
@@ -164,7 +164,7 @@ export default function start({
 	setInterval(() => {
 		maxFrameReached = Math.max(maxFrameReached, stateInd);
 		if (states.length - stateInd < 10 * fps) {
-			for (let i = 0; i < 3; i++)	generateNextState();
+			for (let i = 0; i < 3; i++) generateNextState();
 		}
 		while (states.length - stateInd < 0.2 * fps) {
 			generateNextState();
@@ -180,21 +180,39 @@ export default function start({
 		showTime();
 	});
 
-	const clipboard = new ClipboardJS("#copy-link", {
-		text: () => getSerializedUrl(states[0]),
-	});
+	document.getElementById("copy-link").addEventListener("click", async () => {
+		const copyLinkToolTip = document.getElementById("copy-link-tooltip");
+		const state = states[0];
+		let url;
+		copyLinkToolTip.textContent = "Generating URL...";
 
-	const copyLinkToolTip = document.getElementById("copy-link-tooltip");
-	clipboard.on("success", () => {
+		try {
+			const res = await fetch(`/.netlify/functions/experiment-url`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: `{"state":${serialize(state)}}`,
+			});
+			const { id } = await res.json();
+			url = createHashUrl(id);
+		} catch (e) {
+			console.warn("failed to ask server for url; generating long url ", e);
+			url = getSerializedUrl(state);
+		}
+
+		try {
+			navigator.clipboard.writeText(url);
+		} catch (e) {
+			console.error("failed to copy to clipboard: ", e);
+			copyLinkToolTip.textContent =
+				"Failed to copy. Here is the URL for you to copy manually: " + url;
+		}
+
 		copyLinkToolTip.textContent = "Copied!";
 		setTimeout(() => {
 			copyLinkToolTip.textContent = "";
 		}, 2000);
-	});
-	clipboard.on("error", () => {
-		copyLinkToolTip.textContent =
-			"Failed to copy. Here is the URL for you to copy manually: " +
-			getSerializedUrl(states[0]);
 	});
 
 	window.addEventListener("hashchange", () => {
@@ -250,7 +268,7 @@ export default function start({
 	});
 
 	window.addEventListener("click", () => {
-		if (stateInd >= states.length) return
+		if (stateInd >= states.length) return;
 		const mousePos = pixelsToCoord(getMousePos());
 		for (const object of states[stateInd].allObjects) {
 			if (object.containsPoint(mousePos)) {

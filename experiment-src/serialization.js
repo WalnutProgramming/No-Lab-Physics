@@ -24,7 +24,7 @@ export const classes = {
  * @param {*} state the state object
  * @returns a JSON string
  */
-function serialize(state) {
+export function serialize(state) {
 	return JSON.stringify(state, (_key, value) => {
 		if (typeof value === "number" && !isFinite(value)) {
 			return "$number::" + value;
@@ -63,8 +63,8 @@ export function deserialize(json) {
 		if (value === "$number::NaN") return NaN;
 		if (typeof value === "object" && value != null) {
 			// TODO: Delete this later. This is only for backwards compatibility
-			// because the serializationClassNameKey used to be $className.
-			const className = value[serializationClassNameKey] ?? value.$className;
+			// because the serializationClassNameKey used to be $className and $c.
+			const className = value[serializationClassNameKey] ?? value.$className ?? value.$c;
 			if (Object.keys(classes).includes(className)) {
 				delete value[serializationClassNameKey];
 				const theClass = classes[className];
@@ -100,7 +100,11 @@ export function clone(state) {
 	return deserialize(serialize(state));
 }
 
+export function createHashUrl(text) {
+	const urlWithoutHash = window.location.href.replace(window.location.hash, '');
+	return urlWithoutHash + '#' + encodeURI(text);
+}
+
 export function getSerializedUrl(state) {
-	const urlWithoutHash = window.location.href.replace(window.location.hash, '')
-	return urlWithoutHash + '#' + encodeURI(serialize(state))
+	return createHashUrl(serialize(state));
 }
