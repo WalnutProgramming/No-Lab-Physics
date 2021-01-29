@@ -24,8 +24,11 @@ export const classes = {
  * @param {*} state the state object
  * @returns a JSON string
  */
-export function serialize(state) {
-	return JSON.stringify(state, (_key, value) => {
+export function serialize(state, { deleteIds = false } = {}) {
+	return JSON.stringify(state, (key, value) => {
+		if (key === "id" && deleteIds) {
+			return undefined;
+		}
 		if (typeof value === "number" && !isFinite(value)) {
 			return "$number::" + value;
 		}

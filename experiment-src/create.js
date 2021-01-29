@@ -5,7 +5,13 @@ import {
 	computed,
 } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
 import { CircleMover } from "./objects.js";
-import { classes, clone, getStateFromUrlHash } from "./serialization.js";
+import {
+	classes,
+	clone,
+	deserialize,
+	getStateFromUrlHash,
+	serialize,
+} from "./serialization.js";
 import start from "./start.js";
 import walls from "./walls.js";
 import { nanoid } from "https://unpkg.com/nanoid@3.1.20/nanoid.js";
@@ -222,4 +228,81 @@ import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1P
 		throttle(() => window.restart(false), 16),
 		{ deep: true }
 	);
+
+	// COPYING AND PASTING PHYSICS OBJECTS
+
+	let lastClickWasInsideCanvas = false;
+
+	window.addEventListener("click", (e) => {
+		lastClickWasInsideCanvas = e.target instanceof HTMLCanvasElement;
+	});
+
+	function shouldAllowCopyingAndPastingPhysicsObjects() {
+		return (
+			lastClickWasInsideCanvas &&
+			(document.activeElement instanceof HTMLBodyElement ||
+				document.activeElement instanceof HTMLCanvasElement)
+		);
+	}
+
+	function maybeCopyPhysicsObject(
+		/** @type {ClipboardEvent} */ e,
+		cut = false
+	) {
+		if (!shouldAllowCopyingAndPastingPhysicsObjects()) return;
+
+		const selection = document.getSelection();
+		// If they're actually trying to copy some text, don't interfere
+		if (
+			selection.type !== "Range" &&
+			selection.toString() === "" &&
+			selectedObjectId.value
+		) {
+			const selectedObject = initialState.value.allObjects.find(
+				(o) => o.id === selectedObjectId.value
+			);
+			e.preventDefault();
+			e.clipboardData.setData(
+				"physics-object",
+				serialize(selectedObject, { deleteIds: true })
+			);
+			if (cut) {
+				initialState.value.allObjects = initialState.value.allObjects.filter(
+					({ id }) => id !== selectedObjectId.value
+				);
+				selectedObjectId.value = undefined;
+			}
+		}
+	}
+
+	window.addEventListener("copy", (/** @type {ClipboardEvent} */ e) => {
+		maybeCopyPhysicsObject(e);
+	});
+
+	window.addEventListener("cut", (/** @type {ClipboardEvent} */ e) => {
+		maybeCopyPhysicsObject(e, true);
+	});
+
+	window.addEventListener("paste", (/** @type {ClipboardEvent} */ e) => {
+		if (!shouldAllowCopyingAndPastingPhysicsObjects()) return;
+
+		const data = e.clipboardData.getData("physics-object");
+		if (data && data !== "") {
+			const obj = deserialize(data);
+
+			// Adjust x position of object until it's not on top of another object.
+			// This algorithm could be improved.
+			while (
+				initialState.value.allObjects.find(
+					(otherObj) =>
+						obj.loc.x === otherObj.loc.x && obj.loc.y === otherObj.loc.y
+				)
+			) {
+				obj.loc.x += 50;
+			}
+
+			initialState.value.allObjects.push(obj);
+			selectedObjectId.value = obj.id;
+		}
+	});
 })();
