@@ -8,7 +8,7 @@ import Vector from "./vector.js";
 /** @type {HTMLCanvasElement} */
 export const canvas = document.querySelector("canvas");
 const canvasContainer = canvas.parentElement;
-export const ctx = canvas.getContext("2d");
+export const ctx = canvas.getContext("2d", { alpha: false });
 window.ctx = ctx;
 
 const canvasWidthPixels = () => canvasContainer.clientWidth;

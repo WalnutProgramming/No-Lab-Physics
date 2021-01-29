@@ -5,6 +5,7 @@ import {
 	recordMousePos,
 	canvasScope,
 	getMousePos,
+	canvas,
 } from "./canvas.js";
 import { distToPixels, pixelsToCoord } from "./coordTransforms.js";
 import { Ruler } from "./objects.js";
@@ -80,12 +81,6 @@ export default function start({
 	function draw(state) {
 		// console.log(deserialize(serialize(state)))
 		canvasScope(() => {
-			ctx.clearRect(
-				0,
-				0,
-				distToPixels(canvasWidth()),
-				distToPixels(canvasHeight())
-			);
 			ctx.fillRect(
 				0,
 				0,
@@ -255,13 +250,13 @@ export default function start({
 		mov.applyForce(f);
 	}
 
-	window.addEventListener("mousedown", (e) => {
+	canvas.addEventListener("mousedown", (e) => {
 		recordMousePos(e);
 		userState.ruler.shape1.pressed();
 		userState.ruler.shape2.pressed();
 	});
 
-	window.addEventListener("mouseup", (e) => {
+	canvas.addEventListener("mouseup", (e) => {
 		recordMousePos(e);
 		userState.ruler.shape1.released();
 		userState.ruler.shape2.released();
@@ -277,7 +272,7 @@ export default function start({
 		}
 	});
 
-	window.addEventListener("mousemove", (e) => {
+	canvas.addEventListener("mousemove", (e) => {
 		recordMousePos(e);
 	});
 
