@@ -24,7 +24,7 @@ export const classes = {
  * @param {*} state the state object
  * @returns a JSON string
  */
-function serialize(state) {
+export function serialize(state) {
 	return JSON.stringify(state, (_key, value) => {
 		if (typeof value === "number" && !isFinite(value)) {
 			return "$number::" + value;
@@ -56,15 +56,15 @@ function serialize(state) {
  * @param {string} json A JSON string generated with serialize.
  * @returns the state object
  */
-function deserialize(json) {
+export function deserialize(json) {
 	return JSON.parse(json, (_key, value) => {
 		if (value === "$number::Infinity") return Infinity;
 		if (value === "$number::-Infinity") return -Infinity;
 		if (value === "$number::NaN") return NaN;
 		if (typeof value === "object" && value != null) {
 			// TODO: Delete this later. This is only for backwards compatibility
-			// because the serializationClassNameKey used to be $className.
-			const className = value[serializationClassNameKey] ?? value.$className;
+			// because the serializationClassNameKey used to be $className and $c.
+			const className = value[serializationClassNameKey] ?? value.$className ?? value.$c;
 			if (Object.keys(classes).includes(className)) {
 				delete value[serializationClassNameKey];
 				const theClass = classes[className];
@@ -80,10 +80,7 @@ function deserialize(json) {
 	});
 }
 
-/**
- * @returns a URL link to this page at its current state
- */
-export function getStateFromUrlHash() {
+function getStateFromLongUrlHash() {
 	const json = window.location.hash;
 	if (json.length === 0) {
 		return null;
@@ -100,7 +97,39 @@ export function clone(state) {
 	return deserialize(serialize(state));
 }
 
+export function createHashUrl(text) {
+	const urlWithoutHash = window.location.href.replace(window.location.hash, '');
+	return urlWithoutHash + '#' + encodeURI(text);
+}
+
 export function getSerializedUrl(state) {
-	const urlWithoutHash = window.location.href.replace(window.location.hash, '')
-	return urlWithoutHash + '#' + encodeURI(serialize(state))
+	return createHashUrl(serialize(state));
+}
+
+/**
+ * @returns a promise to the state based on the URL hash
+ */
+export async function getStateFromUrlHash() {
+	let ret;
+
+	// See if the URL looks like JSON
+	if (decodeURI(window.location.hash).startsWith('#{')) {
+		ret = getLongStateFromUrlHash();
+	} else if (window.location.hash.length > 1) {
+		// Fetch value from id
+		try {
+			const id = window.location.hash.substring(1);
+			const res = await fetch(`/.netlify/functions/experiment-url?id=${id}`, {
+				method: "GET",
+			});
+			const { state } = await res.json();
+			if (state) {
+				ret = deserialize(JSON.stringify(state));
+			}
+		} catch (e) {
+			console.error("error fetching data: ", e);
+		}
+	}
+
+	return ret;
 }
