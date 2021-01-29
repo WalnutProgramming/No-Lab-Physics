@@ -1,4 +1,5 @@
 {
+  "//": "This package.json is primarily for the Netlify Functions.",
   "private": true,
   "dependencies": {
     "mongodb": "^3.6.3",
