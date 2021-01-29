@@ -212,7 +212,6 @@ import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1P
 	start({
 		getInitialState() {
 			const state = clone(initialState.value);
-			console.log(state);
 			return state;
 		},
 		getSelectedIds() {
@@ -220,6 +219,9 @@ import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1P
 		},
 		onObjectSelected(id) {
 			selectedObjectId.value = id;
+		},
+		editInitialState(newInitialState) {
+			initialState.value = clone(newInitialState);
 		},
 		isCreating: true,
 	});

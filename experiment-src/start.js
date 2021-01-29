@@ -25,6 +25,7 @@ export default function start({
 	getInitialState,
 	getSelectedIds = () => [],
 	onObjectSelected = () => {},
+	editInitialState = () => {},
 	isCreating = false,
 }) {
 	let userState = {
@@ -251,27 +252,66 @@ export default function start({
 		mov.applyForce(f);
 	}
 
+	let draggedObjectId = null;
+	let lastMousePos;
+
+	function shouldAllowDraggingPhysicsObjects() {
+		return isCreating && userState.paused && stateInd === 0 && states.length > 0;
+	}
+
+	function getObjectUnderMouse() {
+		if (stateInd >= states.length) return;
+		const mousePos = pixelsToCoord(getMousePos());
+		for (const object of states[stateInd].allObjects) {
+			if (object.containsPoint(mousePos)) {
+				return object;
+			}
+		}
+	}
+
+	function selectObjectUnderMouse() {
+		const object = getObjectUnderMouse();
+		if (object) onObjectSelected(object.id);
+	}
+
 	canvas.addEventListener("mousedown", (e) => {
 		recordMousePos(e);
 		userState.ruler.shape1.pressed();
 		userState.ruler.shape2.pressed();
+
+		if (!shouldAllowDraggingPhysicsObjects()) {
+			draggedObjectId = null;
+			return;
+		}
+		const object = getObjectUnderMouse();
+		if (!object) return;
+		draggedObjectId = object.id;
+		lastMousePos = pixelsToCoord(getMousePos());
+		selectObjectUnderMouse();
 	});
+
+	canvas.addEventListener("mousemove", (e) => {
+		if (!shouldAllowDraggingPhysicsObjects()) {
+			draggedObjectId = null;
+		}
+		if (!draggedObjectId) return;
+		const obj = states[stateInd].allObjects.find(({ id }) => id === draggedObjectId);
+		if (!obj) return;
+		obj.loc = obj.loc.add(pixelsToCoord(getMousePos()).subt(lastMousePos));
+		editInitialState(states[stateInd]);
+		lastMousePos = pixelsToCoord(getMousePos());
+	})
 
 	canvas.addEventListener("mouseup", (e) => {
 		recordMousePos(e);
 		userState.ruler.shape1.released();
 		userState.ruler.shape2.released();
+		draggedObjectId = null;
 	});
 
-	canvas.addEventListener("click", () => {
-		if (stateInd >= states.length) return;
-		const mousePos = pixelsToCoord(getMousePos());
-		for (const object of states[stateInd].allObjects) {
-			if (object.containsPoint(mousePos)) {
-				onObjectSelected(object.id);
-			}
-		}
-	});
+	canvas.addEventListener("mouseout", () => {
+		draggedObjectId = null;
+	})
 
 	canvas.addEventListener("mousemove", (e) => {
 		recordMousePos(e);
