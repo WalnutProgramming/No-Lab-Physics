@@ -7,18 +7,22 @@ import { canvasHeight, canvasWidth } from "./canvas.js";
 import walls from "./walls.js";
 import { getStateFromUrlHash } from "./serialization.js";
 
-const getInitialState = () =>
-	getStateFromUrlHash() ?? {
-		allObjects: [
-			...walls(),
-			new CircleMover({
-				loc: new Vector(random(canvasWidth()), 0.25 * canvasHeight()),
-			}),
-			new CircleMover(),
-			new BoxMover({
-				loc: new Vector(random(canvasWidth()), 0.75 * canvasHeight()),
-			}),
-		],
-	};
+(async () => {
+	const urlHashState = await getStateFromUrlHash();
 
-start({ getInitialState });
+	const getInitialState = () =>
+		urlHashState ?? {
+			allObjects: [
+				...walls(),
+				new CircleMover({
+					loc: new Vector(random(canvasWidth()), 0.25 * canvasHeight()),
+				}),
+				new CircleMover(),
+				new BoxMover({
+					loc: new Vector(random(canvasWidth()), 0.75 * canvasHeight()),
+				}),
+			],
+		};
+
+	start({ getInitialState });
+})();

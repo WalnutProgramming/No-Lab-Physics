@@ -80,10 +80,7 @@ export function deserialize(json) {
 	});
 }
 
-/**
- * @returns a URL link to this page at its current state
- */
-export function getStateFromUrlHash() {
+function getStateFromLongUrlHash() {
 	const json = window.location.hash;
 	if (json.length === 0) {
 		return null;
@@ -107,4 +104,32 @@ export function createHashUrl(text) {
 
 export function getSerializedUrl(state) {
 	return createHashUrl(serialize(state));
+}
+
+/**
+ * @returns a promise to the state based on the URL hash
+ */
+export async function getStateFromUrlHash() {
+	let ret;
+
+	// See if the URL looks like JSON
+	if (decodeURI(window.location.hash).startsWith('#{')) {
+		ret = getLongStateFromUrlHash();
+	} else if (window.location.hash.length > 1) {
+		// Fetch value from id
+		try {
+			const id = window.location.hash.substring(1);
+			const res = await fetch(`/.netlify/functions/experiment-url?id=${id}`, {
+				method: "GET",
+			});
+			const { state } = await res.json();
+			if (state) {
+				ret = deserialize(JSON.stringify(state));
+			}
+		} catch (e) {
+			console.error("error fetching data: ", e);
+		}
+	}
+
+	return ret;
 }

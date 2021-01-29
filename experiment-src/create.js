@@ -5,12 +5,7 @@ import {
 	computed,
 } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
 import { CircleMover } from "./objects.js";
-import {
-	classes,
-	clone,
-	getStateFromUrlHash,
-	deserialize,
-} from "./serialization.js";
+import { classes, clone, getStateFromUrlHash } from "./serialization.js";
 import start from "./start.js";
 import walls from "./walls.js";
 import { nanoid } from "https://unpkg.com/nanoid@3.1.20/nanoid.js";
@@ -33,25 +28,8 @@ import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1P
 			].id;
 	}
 
-	// See if the URL looks like JSON
-	if (decodeURI(window.location.hash).startsWith('#{')) {
-		const state = getStateFromUrlHash();
-		if (state) initialState.value = state;
-	} else if (window.location.hash.length > 1) {
-		// Fetch value from id
-		try {
-			const id = window.location.hash.substring(1);
-			const res = await fetch(`/.netlify/functions/experiment-url?id=${id}`, {
-				method: "GET",
-			});
-			const { state } = await res.json();
-			if (state) {
-				initialState.value = deserialize(JSON.stringify(state));
-			}
-		} catch (e) {
-			console.error("error fetching data: ", e);
-		}
-	}
+	const stateFromUrlHash = await getStateFromUrlHash();
+	if (stateFromUrlHash != null) initialState.value = stateFromUrlHash;
 
 	createApp({
 		setup() {
