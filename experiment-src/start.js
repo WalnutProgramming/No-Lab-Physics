@@ -263,7 +263,7 @@ export default function start({
 		userState.ruler.shape2.released();
 	});
 
-	window.addEventListener("click", () => {
+	canvas.addEventListener("click", () => {
 		if (stateInd >= states.length) return;
 		const mousePos = pixelsToCoord(getMousePos());
 		for (const object of states[stateInd].allObjects) {
