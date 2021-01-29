@@ -53,10 +53,6 @@ import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1P
 		}
 	}
 
-	window.testClipboardCopy = () => {
-		navigator.clipboard.writeText("<empty clipboard>")
-	}
-
 	createApp({
 		setup() {
 			function addObject() {

@@ -202,6 +202,7 @@ export default function start({
 			console.error("failed to copy to clipboard: ", e);
 			copyLinkToolTip.textContent =
 				"Failed to copy. Here is the URL for you to copy manually: " + url;
+			return;
 		}
 
 		copyLinkToolTip.textContent = "Copied!";

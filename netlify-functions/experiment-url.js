@@ -1,3 +1,6 @@
+// This file is a Netlify serverless function that creates short
+// URLs and uses MongoDB to store them.
+
 const { nanoid } = require("nanoid");
 const { MongoClient } = require('mongodb');
 
