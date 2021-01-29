@@ -279,6 +279,8 @@ export default function start({
 		userState.ruler.shape1.pressed();
 		userState.ruler.shape2.pressed();
 
+		selectObjectUnderMouse();
+
 		if (!shouldAllowDraggingPhysicsObjects()) {
 			draggedObjectId = null;
 			return;
@@ -287,7 +289,6 @@ export default function start({
 		if (!object) return;
 		draggedObjectId = object.id;
 		lastMousePos = getMousePos();
-		selectObjectUnderMouse();
 	});
 
 	canvas.addEventListener("mousemove", (e) => {
