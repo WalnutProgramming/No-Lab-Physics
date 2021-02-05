@@ -7,7 +7,7 @@ import {
 	getMousePos,
 	canvas,
 } from "./canvas.js";
-import { distToPixels, pixelsToCoord } from "./coordTransforms.js";
+import { distToPixels, pixelsToCoord, coordToPixels } from "./coordTransforms.js";
 import { Ruler } from "./objects.js";
 import Vector from "./vector.js";
 import {
@@ -78,6 +78,19 @@ export default function start({
 		handleCollisions(state);
 	}
 
+	//function to ease creation of arrows in the draw state for selected item's vectors
+	function canvas_arrow(context, fromx, fromy, tox, toy) {
+	  var headlen = 10; // length of head in pixels
+	  var dx = tox - fromx;
+	  var dy = toy - fromy;
+	  var angle = Math.atan2(dy, dx);
+	  context.moveTo(fromx, fromy);
+	  context.lineTo(tox, toy);
+	  context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+	  context.moveTo(tox, toy);
+	  context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));  
+	}
+
 	//loops "constantly" to apply forces and have objects draw themselves
 	function draw(state) {
 		// console.log(deserialize(serialize(state)))
@@ -93,6 +106,16 @@ export default function start({
 			state.allObjects.forEach((object) => {
 				canvasScope(() => {
 					object.draw(selectedIds.includes(object.id));
+
+					if(selectedIds.includes(object.id) && shouldAllowDraggingPhysicsObjects()){
+						ctx.beginPath()
+						let pos = coordToPixels(object.loc)
+						let velo = coordToPixels(object.vel)
+						canvas_arrow(ctx,pos.x,pos.y,(pos.x+velo.x*2),(pos.y+velo.y*2))
+						ctx.strokeStyle = '#ff0000'
+      					ctx.stroke()
+						console.log(object.diameter)
+					}
 				});
 			});
 
