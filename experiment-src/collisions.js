@@ -1,4 +1,4 @@
-import { CircleMover } from "./objects.js";
+import { BoxMover, CircleMover, PolygonMover } from "./objects.js";
 import { constrain } from "./helpers.js";
 import Vector from "./vector.js";
 
@@ -220,31 +220,24 @@ function isCircle(obj) {
 	return obj instanceof CircleMover;
 }
 
-const manifoldFunctions = {
-	BoxMover: {
-		BoxMover: getBoxBoxManifold,
-		CircleMover: getBoxCircleManifold,
-	},
-	CircleMover: {
-		CircleMover: getCircleCircleManifold,
-	},
-	PolygonMover: {
-		CircleMover: getPolygonCircleManifold,
-	}
-}
+const manifoldFunctions = [
+	[BoxMover, BoxMover, getBoxBoxManifold],
+	[BoxMover, CircleMover, getBoxCircleManifold],
+	[CircleMover, CircleMover, getCircleCircleManifold],
+	[PolygonMover, CircleMover, getPolygonCircleManifold],
+]
 
 // returns null if not colliding
 export function getManifold(a, b) {
 	if (a.mass === Infinity && b.mass === Infinity) return null;
 
-	const aClass = a.constructor.name;
-	const bClass = b.constructor.name;
-	
-	let manifoldFunction = manifoldFunctions[aClass]?.[bClass];
-	if (manifoldFunction != null) return manifoldFunction(a, b);
+	for (const [c1, c2, f] of manifoldFunctions) {
+		if (a instanceof c1 && b instanceof c2) {
+			return f(a, b);
+		} else if (a instanceof c2 && b instanceof c1) {
+			return f(b, a);
+		}
+	}
 
-	manifoldFunction = manifoldFunctions[bClass]?.[aClass];
-	if (manifoldFunction != null) return manifoldFunction(b, a);
-	
 	return null;
 }
