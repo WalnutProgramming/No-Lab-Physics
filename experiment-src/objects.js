@@ -138,6 +138,74 @@ export class CircleMover extends Mover {
 	}
 }
 
+export class PolygonMover extends Mover {
+	constructor({ points, ...options }) {
+		super(options);
+		this.points = points;
+	}
+
+	get pointsWithFirstDuplicatedAtEnd() {
+		return [...this.points, this.points[0]];
+	}
+
+	get pointPairs() {
+		const ret = [];
+		for (let i = 1; i < this.points.length; i++) {
+			ret.push([
+				this.pointsWithFirstDuplicatedAtEnd[i - 1],
+				this.pointsWithFirstDuplicatedAtEnd[i],
+			]);
+		}
+		return ret;
+	}
+
+	draw(isSelected = false) {
+		ctx.beginPath();
+		const initialPoint = coordToPixels(this.points[0])
+		ctx.moveTo(initialPoint.x, initialPoint.y);
+		for (const point of this.pointsWithFirstDuplicatedAtEnd) {
+			const { x, y } = coordToPixels(point);
+			ctx.lineTo(x, y);
+		}
+		ctx.fillStyle = "rgb(255, 255, 255)";
+		ctx.fill();
+		if (isSelected) {
+			ctx.strokeStyle = "blue";
+			ctx.stroke();
+		}
+	}
+
+	containsPoint(p) {
+		const polygon = this.points;
+
+		// https://stackoverflow.com/a/17490923
+		let isInside = false;
+    let minX = polygon[0].x, maxX = polygon[0].x;
+    let minY = polygon[0].y, maxY = polygon[0].y;
+    for (let n = 1; n < polygon.length; n++) {
+        const q = polygon[n];
+        minX = Math.min(q.x, minX);
+        maxX = Math.max(q.x, maxX);
+        minY = Math.min(q.y, minY);
+        maxY = Math.max(q.y, maxY);
+    }
+
+    if (p.x < minX || p.x > maxX || p.y < minY || p.y > maxY) {
+        return false;
+    }
+
+    let i = 0, j = polygon.length - 1;
+    for (i, j; i < polygon.length; j = i++) {
+        if ( (polygon[i].y > p.y) != (polygon[j].y > p.y) &&
+                p.x < (polygon[j].x - polygon[i].x) * (p.y - polygon[i].y) / (polygon[j].y - polygon[i].y) + polygon[i].x ) {
+            isInside = !isInside;
+        }
+    }
+
+    return isInside;
+	}
+}
+
 export class Draggable {
 	constructor(x, y, radius) {
 		this.dragging = false;
@@ -155,9 +223,7 @@ export class Draggable {
 
 	get isMouseOver() {
 		let d =
-			(this.radius) ** 2 -
-			((this.x - mouseX()) ** 2 +
-			(this.y - mouseY()) ** 2);
+			this.radius ** 2 - ((this.x - mouseX()) ** 2 + (this.y - mouseY()) ** 2);
 		return d >= 0;
 	}
 

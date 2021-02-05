@@ -38,23 +38,6 @@ export function positionalCorrection({ a, b, normal, penetrationDepth }) {
 	b.loc = b.loc.add(correction.mult(1 / b.mass));
 }
 
-// returns null if not colliding
-export function getManifold(a, b) {
-	if (a.mass === Infinity && b.mass === Infinity) return null;
-
-	const m =
-		isCircle(a) && isCircle(b)
-			? getCircleCircleManifold(a, b)
-			: isCircle(a) && !isCircle(b)
-			? getCircleBoxManifold(b, a)
-			: !isCircle(a) && isCircle(b)
-			? getCircleBoxManifold(a, b)
-			: !isCircle(a) && !isCircle(b)
-			? getBoxBoxManifold(a, b)
-			: null;
-	return m;
-}
-
 function getCircleCircleManifold(a, b) {
 	// vector from a to b
 	let normal = b.loc.subt(a.loc);
@@ -91,7 +74,7 @@ function nonZeroSign(n) {
 	return n < 0 ? -1 : 1;
 }
 
-function getCircleBoxManifold(aBox, bCircle) {
+function getBoxCircleManifold(aBox, bCircle) {
 	let circleLocRelative = bCircle.loc.subt(aBox.loc);
 	// closest point on box to circle center
 	let closest = circleLocRelative.clone();
@@ -151,7 +134,7 @@ function nearestPointOnLineToPoint(/** @type {Vector} */ start, /** @type {Vecto
 }
 
 function getPolygonCircleManifold(aPolygon, /** @type {CircleMover} */ bCircle) {
-	let circleLocRelative = bCircle.loc.subt(aBox.loc);
+	let circleLocRelative = bCircle.loc.subt(aPolygon.loc);
 	
 	// closest point on polygon to circle center
 	let closest
@@ -222,9 +205,38 @@ function getBoxBoxManifold(a, b) {
 // https://blog.hamaluik.ca/posts/building-a-collision-engine-part-2-2d-penetration-vectors/
 // https://www.toptal.com/game/video-game-physics-part-ii-collision-detection-for-solid-objects
 function getPolygonPolygonManifold(a, b) {
-	
+	console.error("polygon collisions aren't supported yet");
 }
 
 function isCircle(obj) {
 	return obj instanceof CircleMover;
+}
+
+const manifoldFunctions = {
+	BoxMover: {
+		BoxMover: getBoxBoxManifold,
+		CircleMover: getBoxCircleManifold,
+	},
+	CircleMover: {
+		CircleMover: getCircleCircleManifold,
+	},
+	PolygonMover: {
+		CircleMover: getPolygonCircleManifold,
+	}
+}
+
+// returns null if not colliding
+export function getManifold(a, b) {
+	if (a.mass === Infinity && b.mass === Infinity) return null;
+
+	const aClass = a.constructor.name;
+	const bClass = b.constructor.name;
+	
+	let manifoldFunction = manifoldFunctions[aClass]?.[bClass];
+	if (manifoldFunction != null) return manifoldFunction(a, b);
+
+	manifoldFunction = manifoldFunctions[bClass]?.[aClass];
+	if (manifoldFunction != null) return manifoldFunction(b, a);
+	
+	return null;
 }
