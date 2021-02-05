@@ -46,6 +46,7 @@ export default function start({
 					positionalCorrection(manifold);
 					manifold = getManifold(object1, object2);
 					if (manifold) {
+						console.log(manifold, manifold.normal);
 						resolveCollision(manifold);
 					}
 				}
@@ -128,7 +129,7 @@ export default function start({
 				states.length < maxFramesToPrecalculate &&
 				Date.now() - startTime < maxTimeToPrecalculate
 			) {
-				generateNextState();
+				// generateNextState();
 			}
 		}
 	}
@@ -159,12 +160,13 @@ export default function start({
 	timeSlider.value = 0;
 	setInterval(() => {
 		maxFrameReached = Math.max(maxFrameReached, stateInd);
-		if (states.length - stateInd < 10 * fps) {
-			for (let i = 0; i < 3; i++) generateNextState();
-		}
-		while (states.length - stateInd < 0.2 * fps) {
-			generateNextState();
-		}
+		// if (states.length - stateInd < 10 * fps) {
+		// 	for (let i = 0; i < 3; i++) generateNextState();
+		// }
+		// while (states.length - stateInd < 0.2 * fps) {
+		// 	generateNextState();
+		// }
+		generateNextState();
 		if (!userState.paused) {
 			stateInd++;
 		}

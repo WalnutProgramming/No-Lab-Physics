@@ -138,10 +138,25 @@ export class CircleMover extends Mover {
 	}
 }
 
+function centerOfMassOfPolygonPoints(points) {
+	// TODO
+	return new Vector(0, 0);
+}
+
+// TODO: position doesn't mean anything, but should be center of mass
+// points should be relative
 export class PolygonMover extends Mover {
+
+
 	constructor({ points, ...options }) {
 		super(options);
+
+		// const centerOfMass = 
+		// this.relativePoints = points.map((p) => p.subt(centerOfMass));
+
 		this.points = points;
+		this.mass = Infinity;
+		this.hasGravity = false;
 	}
 
 	get pointsWithFirstDuplicatedAtEnd() {
@@ -150,7 +165,7 @@ export class PolygonMover extends Mover {
 
 	get pointPairs() {
 		const ret = [];
-		for (let i = 1; i < this.points.length; i++) {
+		for (let i = 1; i < this.pointsWithFirstDuplicatedAtEnd.length; i++) {
 			ret.push([
 				this.pointsWithFirstDuplicatedAtEnd[i - 1],
 				this.pointsWithFirstDuplicatedAtEnd[i],
