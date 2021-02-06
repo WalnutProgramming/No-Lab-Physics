@@ -111,7 +111,7 @@ export default function start({
 					object.draw(selectedIds.includes(object.id));
 
 					// if(selectedIds.includes(object.id) && shouldAllowDraggingPhysicsObjects()){
-					if (!(object.vel.x == 0 && object.vel.y == 0)) {
+					if (object.vel.magnitude() > 0.5) {
 						ctx.beginPath()
 						let pos = coordToPixels(object.loc)
 						let velo = coordToPixels(object.vel)
