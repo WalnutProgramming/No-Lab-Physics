@@ -158,8 +158,6 @@ function centerOfMassOfPolygonPoints(pts) {
 	return new Vector(x/f, y/f);
 }
 
-// TODO: position doesn't mean anything, but should be center of mass
-// points should be relative
 export class PolygonMover extends Mover {
 	// Don't set _relativePoints manually
 	constructor({ points, _relativePoints, ...options } = {}) {
