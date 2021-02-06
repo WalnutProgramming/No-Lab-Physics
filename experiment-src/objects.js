@@ -263,7 +263,7 @@ function getRampRelativePoints(width, height) {
 export class RampMover extends PolygonMover {
 	constructor({ width, height, ...options } = {}) {
 		if (options._relativePoints == null) {
-			super({ ...options, relativePoints: getRampRelativePoints(width ?? 500, height ?? 100) });
+			super({ ...options, relativePoints: getRampRelativePoints(width ?? 500, height ?? 200) });
 		} else {
 			super(options);
 		}

@@ -28,7 +28,7 @@ import Vector from "./vector.js";
 		allObjects: [
 			...walls(),
 			// new PolygonMover({ absolutePoints: [new Vector(100, 500), new Vector(100, 600), new Vector(600, 600)] }),
-			new RampMover({ loc: new Vector(300, 580) }),
+			new RampMover({ loc: new Vector(300, 540) }),
 			new CircleMover(),
 		],
 	});
