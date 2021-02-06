@@ -108,15 +108,15 @@ export default function start({
 				canvasScope(() => {
 					object.draw(selectedIds.includes(object.id));
 
-					if(selectedIds.includes(object.id) && shouldAllowDraggingPhysicsObjects()){
-						ctx.beginPath()
-						let pos = coordToPixels(object.loc)
-						let velo = coordToPixels(object.vel)
-						canvas_arrow(ctx,pos.x,pos.y,(pos.x+velo.x*2),(pos.y+velo.y*2))
-						ctx.strokeStyle = '#ff0000'
-      					ctx.stroke()
-						console.log(object.diameter)
-					}
+					// if(selectedIds.includes(object.id) && shouldAllowDraggingPhysicsObjects()){
+					ctx.beginPath()
+					let pos = coordToPixels(object.loc)
+					let velo = coordToPixels(object.vel)
+					canvas_arrow(ctx,pos.x,pos.y,(pos.x+velo.x*13),(pos.y+velo.y*13))
+					ctx.strokeStyle = '#ff0000'
+							ctx.stroke()
+					console.log(object.diameter)
+					// }
 				});
 			});
 
