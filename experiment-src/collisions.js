@@ -18,7 +18,7 @@ export function resolveCollision({ a, b, normal }) {
 
 	let impulse = normal.mult(impulseScalar);
 
-	console.log(impulse);
+	// console.log(impulse);
 
 	// Apply impulse
 	a.vel = a.vel.subt(impulse.div(a.mass));
@@ -35,9 +35,8 @@ export function positionalCorrection({ a, b, normal, penetrationDepth }) {
 		.mult(Math.max(penetrationDepth - slop, 0))
 		.div(1 / a.mass + 1 / b.mass)
 		.mult(percent);
-	// TODO: put back
-	// a.loc = a.loc.subt(correction.mult(1 / a.mass));
-	// b.loc = b.loc.add(correction.mult(1 / b.mass));
+	a.loc = a.loc.subt(correction.mult(1 / a.mass));
+	b.loc = b.loc.add(correction.mult(1 / b.mass));
 }
 
 function getCircleCircleManifold(a, b) {
@@ -136,15 +135,13 @@ function nearestPointOnLineToPoint(/** @type {Vector} */ start, /** @type {Vecto
 }
 
 function getPolygonCircleManifold(aPolygon, /** @type {CircleMover} */ bCircle) {
-	let circleLocRelative = bCircle.loc
-	// .subt(aPolygon.loc)
-	;
+	let circleLocRelative = bCircle.loc/*.subt(aPolygon.loc)*/;
 	
 	// closest point on polygon to circle center
 	let closest
 	const center = bCircle.loc
 	let minDist = Infinity;
-	aPolygon.pointPairs.forEach(([p1, p2]) => {
+	aPolygon.absolutePointPairs.forEach(([p1, p2]) => {
 		const point = nearestPointOnLineToPoint(p1, p2, center);
 		const dist = point.distanceTo(center);
 		if (dist < minDist) {

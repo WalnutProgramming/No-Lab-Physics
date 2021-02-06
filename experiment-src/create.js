@@ -27,7 +27,7 @@ import Vector from "./vector.js";
 	const initialState = ref({
 		allObjects: [
 			...walls(),
-			new PolygonMover({ points: [new Vector(100, 300), new Vector(100, 600), new Vector(400, 600)] }),
+			new PolygonMover({ points: [new Vector(100, 500), new Vector(100, 600), new Vector(600, 600)] }),
 			new CircleMover(),
 		],
 	});

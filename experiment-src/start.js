@@ -46,7 +46,7 @@ export default function start({
 					positionalCorrection(manifold);
 					manifold = getManifold(object1, object2);
 					if (manifold) {
-						console.log(manifold, manifold.normal);
+						// console.log(manifold, manifold.normal);
 						resolveCollision(manifold);
 					}
 				}

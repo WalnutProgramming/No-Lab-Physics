@@ -138,37 +138,71 @@ export class CircleMover extends Mover {
 	}
 }
 
-function centerOfMassOfPolygonPoints(points) {
-	// TODO
-	return new Vector(0, 0);
+// https://stackoverflow.com/a/9939071
+function centerOfMassOfPolygonPoints(pts) {
+	var first = pts[0], last = pts[pts.length-1];
+	if (first.x != last.x || first.y != last.y) pts = [...pts, pts[0]];
+	var twicearea=0,
+	x=0, y=0,
+	nPts = pts.length,
+	p1, p2, f;
+	for ( var i=0, j=nPts-1 ; i<nPts ; j=i++ ) {
+		 p1 = pts[i]; p2 = pts[j];
+		 f = p1.x*p2.y - p2.x*p1.y;
+		 twicearea += f;          
+		 x += ( p1.x + p2.x ) * f;
+		 y += ( p1.y + p2.y ) * f;
+	}
+	f = twicearea * 3;
+	// console.log(x/f, y/f);
+	return new Vector(x/f, y/f);
 }
 
 // TODO: position doesn't mean anything, but should be center of mass
 // points should be relative
 export class PolygonMover extends Mover {
-
-
-	constructor({ points, ...options }) {
+	// Don't set _relativePoints manually
+	constructor({ points, _relativePoints, ...options } = {}) {
 		super(options);
 
-		// const centerOfMass = 
-		// this.relativePoints = points.map((p) => p.subt(centerOfMass));
+		if (_relativePoints) {
+			this._relativePoints = _relativePoints;
+		} else if (points) {
+			this.absolutePoints = points;
+		} else {
+			console.error('no points provided to polygon');
+		}
 
-		this.points = points;
 		this.mass = Infinity;
 		this.hasGravity = false;
+
+		console.log('loc', this.loc, this.absolutePoints, this.relativePoints);
 	}
 
-	get pointsWithFirstDuplicatedAtEnd() {
-		return [...this.points, this.points[0]];
+	get relativePoints() {
+		return this._relativePoints;
+	}
+	set relativePoints(points) {
+		const centerOfMass = centerOfMassOfPolygonPoints(points);
+		this._relativePoints = points.map((p) => p.subt(centerOfMass));
 	}
 
-	get pointPairs() {
+	get absolutePoints() {
+		return this.relativePoints.map((p) => p.add(this.loc));
+	}
+	set absolutePoints(points) {
+		this.loc = centerOfMassOfPolygonPoints(points);
+		this._relativePoints = points.map((p) => p.subt(this.loc));
+		// last line could be "this.relativePoints = points", but that's slower
+	}
+
+	get absolutePointPairs() {
 		const ret = [];
-		for (let i = 1; i < this.pointsWithFirstDuplicatedAtEnd.length; i++) {
+		const pointsWithFirstDuplicatedAtEnd = [...this.absolutePoints, this.absolutePoints[0]];
+		for (let i = 1; i < pointsWithFirstDuplicatedAtEnd.length; i++) {
 			ret.push([
-				this.pointsWithFirstDuplicatedAtEnd[i - 1],
-				this.pointsWithFirstDuplicatedAtEnd[i],
+				pointsWithFirstDuplicatedAtEnd[i - 1],
+				pointsWithFirstDuplicatedAtEnd[i],
 			]);
 		}
 		return ret;
@@ -176,9 +210,9 @@ export class PolygonMover extends Mover {
 
 	draw(isSelected = false) {
 		ctx.beginPath();
-		const initialPoint = coordToPixels(this.points[0])
+		const initialPoint = coordToPixels(this.absolutePoints[0])
 		ctx.moveTo(initialPoint.x, initialPoint.y);
-		for (const point of this.pointsWithFirstDuplicatedAtEnd) {
+		for (const point of [...this.absolutePoints, this.absolutePoints[0]]) {
 			const { x, y } = coordToPixels(point);
 			ctx.lineTo(x, y);
 		}
@@ -191,7 +225,7 @@ export class PolygonMover extends Mover {
 	}
 
 	containsPoint(p) {
-		const polygon = this.points;
+		const polygon = this.absolutePoints;
 
 		// https://stackoverflow.com/a/17490923
 		let isInside = false;
