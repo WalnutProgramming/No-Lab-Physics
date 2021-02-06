@@ -4,7 +4,7 @@ import {
 	watch,
 	computed,
 } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
-import { CircleMover } from "./objects.js";
+import { CircleMover, PolygonMover, RampMover } from "./objects.js";
 import {
 	classes,
 	clone,
@@ -16,6 +16,7 @@ import start from "./start.js";
 import walls from "./walls.js";
 import { nanoid } from "https://unpkg.com/nanoid@3.1.20/nanoid.js";
 import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1PSWaO3mr3KWqgK/min/lodash-es.js";
+import Vector from "./vector.js";
 
 (async () => {
 	const creationOptions = ref({
@@ -24,7 +25,12 @@ import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1P
 		},
 	});
 	const initialState = ref({
-		allObjects: [...walls(), new CircleMover()],
+		allObjects: [
+			...walls(),
+			// new PolygonMover({ absolutePoints: [new Vector(100, 500), new Vector(100, 600), new Vector(600, 600)] }),
+			new RampMover({ loc: new Vector(300, 540) }),
+			new CircleMover(),
+		],
 	});
 	const selectedObjectId = ref();
 	if (initialState.value.allObjects.length > 0) {
@@ -136,6 +142,7 @@ import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1P
 						<select v-model="className">
 							<option value="CircleMover">Circle</option>
 							<option value="BoxMover">Rectangle</option>
+							<option value="RampMover">Ramp</option>
 						</select>
 					</label>
 					<p v-if="modelValue.loc != null">Initial Position: <vector-form v-model="modelValue.loc" /> </p>

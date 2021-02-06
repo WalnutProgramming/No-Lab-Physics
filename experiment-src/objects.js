@@ -18,6 +18,7 @@ import {
 import { nanoid } from "https://unpkg.com/nanoid@3.1.20/nanoid.js";
 import { random } from "./helpers.js";
 import Vector from "./vector.js";
+import serializationClassNameKey from "./serializationClassNameKey.js";
 
 export class Mover {
 	constructor({
@@ -80,13 +81,13 @@ export class BoxMover extends Mover {
 	}
 
 	containsPoint(point) {
-		if (this.mass < Infinity) {
-			window.point = point;
-			window.x = this.x;
-			window.y = this.y;
-			window.height = this.height;
-			window.width = this.width;
-		}
+		// if (this.mass < Infinity) {
+		// 	window.point = point;
+		// 	window.x = this.x;
+		// 	window.y = this.y;
+		// 	window.height = this.height;
+		// 	window.width = this.width;
+		// }
 		if (point.x < this.x - this.width / 2) return false;
 		if (point.x > this.x + this.width / 2) return false;
 		if (point.y < this.y - this.height / 2) return false;
@@ -138,6 +139,160 @@ export class CircleMover extends Mover {
 	}
 }
 
+// https://stackoverflow.com/a/9939071
+function centerOfMassOfPolygonPoints(pts) {
+	var first = pts[0], last = pts[pts.length-1];
+	if (first.x != last.x || first.y != last.y) pts = [...pts, pts[0]];
+	var twicearea=0,
+	x=0, y=0,
+	nPts = pts.length,
+	p1, p2, f;
+	for ( var i=0, j=nPts-1 ; i<nPts ; j=i++ ) {
+		 p1 = pts[i]; p2 = pts[j];
+		 f = p1.x*p2.y - p2.x*p1.y;
+		 twicearea += f;          
+		 x += ( p1.x + p2.x ) * f;
+		 y += ( p1.y + p2.y ) * f;
+	}
+	f = twicearea * 3;
+	return new Vector(x/f, y/f);
+}
+
+export class PolygonMover extends Mover {
+	// Don't set _relativePoints manually
+	constructor({ absolutePoints, _relativePoints, relativePoints, ...options } = {}) {
+		super(options);
+
+		if (relativePoints) {
+			this.relativePoints = relativePoints
+		} else if (_relativePoints != null) {
+			this._relativePoints = _relativePoints;
+		} else if (absolutePoints != null) {
+			this.absolutePoints = absolutePoints;
+		} else {
+			console.error('no points provided to polygon');
+		}
+
+		this.mass = Infinity;
+		this.hasGravity = false;
+	}
+
+	get relativePoints() {
+		return this._relativePoints;
+	}
+	set relativePoints(points) {
+		const centerOfMass = centerOfMassOfPolygonPoints(points);
+		this._relativePoints = points.map((p) => p.subt(centerOfMass));
+	}
+
+	get absolutePoints() {
+		return this.relativePoints.map((p) => p.add(this.loc));
+	}
+	set absolutePoints(points) {
+		this.loc = centerOfMassOfPolygonPoints(points);
+		this._relativePoints = points.map((p) => p.subt(this.loc));
+		// last line could be "this.relativePoints = points", but that's slower
+	}
+
+	get absolutePointPairs() {
+		const ret = [];
+		const pointsWithFirstDuplicatedAtEnd = [...this.absolutePoints, this.absolutePoints[0]];
+		for (let i = 1; i < pointsWithFirstDuplicatedAtEnd.length; i++) {
+			ret.push([
+				pointsWithFirstDuplicatedAtEnd[i - 1],
+				pointsWithFirstDuplicatedAtEnd[i],
+			]);
+		}
+		return ret;
+	}
+
+	draw(isSelected = false) {
+		ctx.beginPath();
+		const initialPoint = coordToPixels(this.absolutePoints[0])
+		ctx.moveTo(initialPoint.x, initialPoint.y);
+		for (const point of [...this.absolutePoints, this.absolutePoints[0]]) {
+			const { x, y } = coordToPixels(point);
+			ctx.lineTo(x, y);
+		}
+		ctx.fillStyle = "rgb(255, 255, 255)";
+		ctx.fill();
+		if (isSelected) {
+			ctx.strokeStyle = "blue";
+			ctx.stroke();
+		}
+	}
+
+	containsPoint(p) {
+		const polygon = this.absolutePoints;
+
+		// https://stackoverflow.com/a/17490923
+		let isInside = false;
+    let minX = polygon[0].x, maxX = polygon[0].x;
+    let minY = polygon[0].y, maxY = polygon[0].y;
+    for (let n = 1; n < polygon.length; n++) {
+        const q = polygon[n];
+        minX = Math.min(q.x, minX);
+        maxX = Math.max(q.x, maxX);
+        minY = Math.min(q.y, minY);
+        maxY = Math.max(q.y, maxY);
+    }
+
+    if (p.x < minX || p.x > maxX || p.y < minY || p.y > maxY) {
+        return false;
+    }
+
+    let i = 0, j = polygon.length - 1;
+    for (i, j; i < polygon.length; j = i++) {
+        if ( (polygon[i].y > p.y) != (polygon[j].y > p.y) &&
+                p.x < (polygon[j].x - polygon[i].x) * (p.y - polygon[i].y) / (polygon[j].y - polygon[i].y) + polygon[i].x ) {
+            isInside = !isInside;
+        }
+    }
+
+    return isInside;
+	}
+}
+
+function getRampRelativePoints(width, height) {
+	return [
+		new Vector(0, 0),
+		new Vector(0, height),
+		new Vector(width, height),
+	];
+}
+export class RampMover extends PolygonMover {
+	constructor({ width, height, ...options } = {}) {
+		if (options._relativePoints == null) {
+			super({ ...options, relativePoints: getRampRelativePoints(width ?? 500, height ?? 200) });
+		} else {
+			super(options);
+		}
+	}
+
+	static toJSON() {
+		return {
+			serialization
+		}
+	}
+
+	get width() {
+		return this.relativePoints[2].x - this.relativePoints[0].x;
+	}
+	set width(width) {
+		this.relativePoints = getRampRelativePoints(width, this.height);
+		window.ramp = this;
+	}
+
+	get height() {
+		return this.relativePoints[2].y - this.relativePoints[0].y;
+	}
+	set height(height) {
+		this.relativePoints = getRampRelativePoints(this.width, height);
+	}
+}
+
+window.RampMover = RampMover
+
 export class Draggable {
 	constructor(x, y, radius) {
 		this.dragging = false;
@@ -155,9 +310,7 @@ export class Draggable {
 
 	get isMouseOver() {
 		let d =
-			(this.radius) ** 2 -
-			((this.x - mouseX()) ** 2 +
-			(this.y - mouseY()) ** 2);
+			this.radius ** 2 - ((this.x - mouseX()) ** 2 + (this.y - mouseY()) ** 2);
 		return d >= 0;
 	}
 

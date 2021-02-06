@@ -18,6 +18,8 @@ import {
 import { createHashUrl, getSerializedUrl, serialize } from "./serialization.js";
 import { cloneDeep } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1PSWaO3mr3KWqgK/min/lodash-es.js";
 
+const DEBUG_DONT_PREGENERATE = false;
+
 // 60 frames per second
 const fps = 60;
 
@@ -80,7 +82,6 @@ export default function start({
 
 	//loops "constantly" to apply forces and have objects draw themselves
 	function draw(state) {
-		// console.log(deserialize(serialize(state)))
 		canvasScope(() => {
 			ctx.fillRect(
 				0,
@@ -128,7 +129,7 @@ export default function start({
 				states.length < maxFramesToPrecalculate &&
 				Date.now() - startTime < maxTimeToPrecalculate
 			) {
-				generateNextState();
+				if (!DEBUG_DONT_PREGENERATE) generateNextState();
 			}
 		}
 	}
@@ -159,11 +160,15 @@ export default function start({
 	timeSlider.value = 0;
 	setInterval(() => {
 		maxFrameReached = Math.max(maxFrameReached, stateInd);
-		if (states.length - stateInd < 10 * fps) {
-			for (let i = 0; i < 3; i++) generateNextState();
-		}
-		while (states.length - stateInd < 0.2 * fps) {
+		if (DEBUG_DONT_PREGENERATE) {
 			generateNextState();
+		} else {
+			if (states.length - stateInd < 10 * fps) {
+				for (let i = 0; i < 3; i++) generateNextState();
+			}
+			while (states.length - stateInd < 0.2 * fps) {
+				generateNextState();
+			}
 		}
 		if (!userState.paused) {
 			stateInd++;
