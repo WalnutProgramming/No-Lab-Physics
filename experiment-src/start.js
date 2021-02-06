@@ -85,10 +85,12 @@ export default function start({
 	  var dy = toy - fromy;
 	  var angle = Math.atan2(dy, dx);
 	  context.moveTo(fromx, fromy);
-	  context.lineTo(tox, toy);
+	  context.lineTo(tox-1, toy-1);
 	  context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
-	  context.moveTo(tox, toy);
-	  context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));  
+	  context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+	  context.lineTo(tox,toy);
+	  context.fillStyle = "red"
+	  context.fill();
 	}
 
 	//loops "constantly" to apply forces and have objects draw themselves
@@ -107,13 +109,14 @@ export default function start({
 				canvasScope(() => {
 					object.draw(selectedIds.includes(object.id));
 
-					if(selectedIds.includes(object.id) && shouldAllowDraggingPhysicsObjects()){
+					if(selectedIds.includes(object.id) && shouldAllowDraggingPhysicsObjects() && !(object.vel.x == 0 && object.vel.y == 0)){
 						ctx.beginPath()
 						let pos = coordToPixels(object.loc)
 						let velo = coordToPixels(object.vel)
 						canvas_arrow(ctx,pos.x,pos.y,(pos.x+velo.x*2),(pos.y+velo.y*2))
 						ctx.strokeStyle = '#ff0000'
       					ctx.stroke()
+      					//ctx.fill()
 						console.log(object.diameter)
 					}
 				});
