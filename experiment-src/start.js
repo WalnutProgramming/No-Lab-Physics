@@ -46,7 +46,6 @@ export default function start({
 					positionalCorrection(manifold);
 					manifold = getManifold(object1, object2);
 					if (manifold) {
-						// console.log(manifold, manifold.normal);
 						resolveCollision(manifold);
 					}
 				}
@@ -81,7 +80,6 @@ export default function start({
 
 	//loops "constantly" to apply forces and have objects draw themselves
 	function draw(state) {
-		// console.log(deserialize(serialize(state)))
 		canvasScope(() => {
 			ctx.fillRect(
 				0,

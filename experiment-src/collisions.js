@@ -18,8 +18,6 @@ export function resolveCollision({ a, b, normal }) {
 
 	let impulse = normal.mult(impulseScalar);
 
-	// console.log(impulse);
-
 	// Apply impulse
 	a.vel = a.vel.subt(impulse.div(a.mass));
 	b.vel = b.vel.add(impulse.div(b.mass));
@@ -157,9 +155,6 @@ function getPolygonCircleManifold(aPolygon, /** @type {CircleMover} */ bCircle) 
 	let d = normal.magnitudeSquared();
 	let r = bCircle.radius;
 
-	// console.log(Math.sqrt(d));
-
-	
 	// Early out if the radius is shorter than distance to closest point and
 	// Circle not inside the box
 	if (d > r * r && !inside) return null;
@@ -169,8 +164,6 @@ function getPolygonCircleManifold(aPolygon, /** @type {CircleMover} */ bCircle) 
 	// Collision normal needs to be flipped to point outside if circle was
 	// inside the box
 	if (inside) normal = normal.mult(-1);
-
-	// console.log(normal.x, normal.y, r, Math.sqrt(d), r - Math.sqrt(d));
 
 	return {
 		a: aPolygon,

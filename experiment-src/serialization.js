@@ -1,5 +1,5 @@
 import Vector from "./vector.js";
-import { Mover, BoxMover, CircleMover, Ruler, Draggable, PolygonMover } from "./objects.js";
+import { Mover, BoxMover, CircleMover, Ruler, Draggable, PolygonMover, RampMover } from "./objects.js";
 import serializationClassNameKey from "./serializationClassNameKey.js";
 
 /** The classes that can be serialized and deserialized */
@@ -11,6 +11,7 @@ export const classes = {
 	Ruler,
 	Draggable,
 	PolygonMover,
+	RampMover,
 };
 
 /**

@@ -4,7 +4,7 @@ import {
 	watch,
 	computed,
 } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
-import { CircleMover, PolygonMover } from "./objects.js";
+import { CircleMover, PolygonMover, RampMover } from "./objects.js";
 import {
 	classes,
 	clone,
@@ -27,7 +27,8 @@ import Vector from "./vector.js";
 	const initialState = ref({
 		allObjects: [
 			...walls(),
-			new PolygonMover({ points: [new Vector(100, 500), new Vector(100, 600), new Vector(600, 600)] }),
+			// new PolygonMover({ absolutePoints: [new Vector(100, 500), new Vector(100, 600), new Vector(600, 600)] }),
+			new RampMover({ loc: new Vector(300, 580) }),
 			new CircleMover(),
 		],
 	});
@@ -141,6 +142,7 @@ import Vector from "./vector.js";
 						<select v-model="className">
 							<option value="CircleMover">Circle</option>
 							<option value="BoxMover">Rectangle</option>
+							<option value="RampMover">Ramp</option>
 						</select>
 					</label>
 					<p v-if="modelValue.loc != null">Initial Position: <vector-form v-model="modelValue.loc" /> </p>

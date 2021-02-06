@@ -18,6 +18,7 @@ import {
 import { nanoid } from "https://unpkg.com/nanoid@3.1.20/nanoid.js";
 import { random } from "./helpers.js";
 import Vector from "./vector.js";
+import serializationClassNameKey from "./serializationClassNameKey.js";
 
 export class Mover {
 	constructor({
@@ -80,13 +81,13 @@ export class BoxMover extends Mover {
 	}
 
 	containsPoint(point) {
-		if (this.mass < Infinity) {
-			window.point = point;
-			window.x = this.x;
-			window.y = this.y;
-			window.height = this.height;
-			window.width = this.width;
-		}
+		// if (this.mass < Infinity) {
+		// 	window.point = point;
+		// 	window.x = this.x;
+		// 	window.y = this.y;
+		// 	window.height = this.height;
+		// 	window.width = this.width;
+		// }
 		if (point.x < this.x - this.width / 2) return false;
 		if (point.x > this.x + this.width / 2) return false;
 		if (point.y < this.y - this.height / 2) return false;
@@ -154,27 +155,26 @@ function centerOfMassOfPolygonPoints(pts) {
 		 y += ( p1.y + p2.y ) * f;
 	}
 	f = twicearea * 3;
-	// console.log(x/f, y/f);
 	return new Vector(x/f, y/f);
 }
 
 export class PolygonMover extends Mover {
 	// Don't set _relativePoints manually
-	constructor({ points, _relativePoints, ...options } = {}) {
+	constructor({ absolutePoints, _relativePoints, relativePoints, ...options } = {}) {
 		super(options);
 
-		if (_relativePoints) {
+		if (relativePoints) {
+			this.relativePoints = relativePoints
+		} else if (_relativePoints != null) {
 			this._relativePoints = _relativePoints;
-		} else if (points) {
-			this.absolutePoints = points;
+		} else if (absolutePoints != null) {
+			this.absolutePoints = absolutePoints;
 		} else {
 			console.error('no points provided to polygon');
 		}
 
 		this.mass = Infinity;
 		this.hasGravity = false;
-
-		console.log('loc', this.loc, this.absolutePoints, this.relativePoints);
 	}
 
 	get relativePoints() {
@@ -252,6 +252,46 @@ export class PolygonMover extends Mover {
     return isInside;
 	}
 }
+
+function getRampRelativePoints(width, height) {
+	return [
+		new Vector(0, 0),
+		new Vector(0, height),
+		new Vector(width, height),
+	];
+}
+export class RampMover extends PolygonMover {
+	constructor({ width, height, ...options } = {}) {
+		if (options._relativePoints == null) {
+			super({ ...options, relativePoints: getRampRelativePoints(width ?? 500, height ?? 100) });
+		} else {
+			super(options);
+		}
+	}
+
+	static toJSON() {
+		return {
+			serialization
+		}
+	}
+
+	get width() {
+		return this.relativePoints[2].x - this.relativePoints[0].x;
+	}
+	set width(width) {
+		this.relativePoints = getRampRelativePoints(width, this.height);
+		window.ramp = this;
+	}
+
+	get height() {
+		return this.relativePoints[2].y - this.relativePoints[0].y;
+	}
+	set height(height) {
+		this.relativePoints = getRampRelativePoints(this.width, height);
+	}
+}
+
+window.RampMover = RampMover
 
 export class Draggable {
 	constructor(x, y, radius) {
