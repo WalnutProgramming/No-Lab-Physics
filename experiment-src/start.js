@@ -55,12 +55,38 @@ export default function start({
 		}
 	}
 
+	function handleGravitation(state) {
+		const { allObjects } = state;
+		// loop through every pair of objects
+		for (let index1 = 0; index1 < allObjects.length; index1++) {
+			for (let index2 = index1 + 1; index2 < allObjects.length; index2++) {
+				let object1 = allObjects[index1];
+				let object2 = allObjects[index2];
+				const mass1 = object1.mass;
+				const mass2 = object2.mass;
+
+				if (!(isFinite(mass1) && isFinite(mass2))) continue;
+
+				const positionDifference = object2.loc.subt(object1.loc);
+				const r = positionDifference.magnitude();
+				const forceDirection = positionDifference.normalize();
+				
+				let gravityMagnitude = state.universalGravitationalConstant * mass1 * mass2 / r ** 2
+				gravityMagnitude = Math.min(gravityMagnitude, 1);
+				const gravity = forceDirection.mult(gravityMagnitude);
+
+				object1.applyForce(gravity);
+				object2.applyForce(gravity.mult(-1));
+			}
+		}
+	}
+
 	function update(state) {
 		//for each object in the array of them
 		state.allObjects.forEach((e) => {
-			if (e.hasGravity) {
+			if (state.hasPlanetGravity && e.hasGravity) {
 				//apply a abitrary gravity
-				let gravity = new Vector(0, 0.3);
+				let gravity = new Vector(0, state.planetGravity);
 				//gravity not based on mass so multiply it so it will be divided out later
 				gravity = gravity.mult(e.mass);
 				e.applyForce(gravity);
@@ -72,10 +98,14 @@ export default function start({
 			// 	e.applyForce(wind);
 			// }
 
-			friction(e, -0.05);
+			// friction(e, -0.05);
 
 			e.update();
 		});
+
+		if (state.hasUniversalGravitation) {
+			handleGravitation(state);
+		}
 
 		handleCollisions(state);
 	}
@@ -118,7 +148,6 @@ export default function start({
 						canvas_arrow(ctx,pos.x,pos.y,(pos.x+velo.x*13),(pos.y+velo.y*13))
 						ctx.strokeStyle = '#ff0000'
 						ctx.stroke()
-						console.log(object.diameter)
 					}
 					// }
 				});

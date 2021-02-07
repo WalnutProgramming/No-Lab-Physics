@@ -31,6 +31,10 @@ import Vector from "./vector.js";
 			new RampMover({ loc: new Vector(300, 540) }),
 			new CircleMover(),
 		],
+		hasUniversalGravitation: false,
+		universalGravitationalConstant: 0.5,
+		hasPlanetGravity: true,
+		planetGravity: 0.3,
 	});
 	const selectedObjectId = ref();
 	if (initialState.value.allObjects.length > 0) {
@@ -67,6 +71,7 @@ import Vector from "./vector.js";
 			const isObjectSelected = computed(() => selectedObjectIndex.value !== -1);
 
 			return {
+				initialState,
 				creationOptions,
 				initialState,
 				addObject,
@@ -100,6 +105,23 @@ import Vector from "./vector.js";
 						v-if="isObjectSelected"
 						v-model="initialState.allObjects[selectedObjectIndex]"
 					/>
+				</div>
+				<h2 style="margin-bottom: 0.5rem">Global Settings</h2>
+				<div style="display: flex; flex-direction: column; gap: 1rem">
+					<div>
+						<input v-model="initialState.hasPlanetGravity" id="planetGravity" type="checkbox" />
+						<label for="planetGravity">Global downward gravity?</label>
+						<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasPlanetGravity">
+							g = <number-input v-model="initialState.planetGravity" />
+						</label>
+					</div>
+					<div>
+						<input v-model="initialState.hasUniversalGravitation" id="globalGravity" type="checkbox" />
+						<label for="globalGravity">Gravity between objects?</label>
+						<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasUniversalGravitation">
+							G = <number-input v-model="initialState.universalGravitationalConstant" />
+						</label>
+					</div>
 				</div>
 			</form>
 		`,
