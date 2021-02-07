@@ -35,6 +35,8 @@ import Vector from "./vector.js";
 		universalGravitationalConstant: 0.5,
 		hasPlanetGravity: true,
 		planetGravity: 0.3,
+		hasAirResistance: true,
+		dragCoefficient: -0.05,
 	});
 	const selectedObjectId = ref();
 	if (initialState.value.allObjects.length > 0) {
@@ -113,6 +115,13 @@ import Vector from "./vector.js";
 						<label for="planetGravity">Global downward gravity?</label>
 						<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasPlanetGravity">
 							g = <number-input v-model="initialState.planetGravity" />
+						</label>
+					</div>
+					<div>
+						<input v-model="initialState.hasAirResistance" id="hasAirResistance" type="checkbox" />
+						<label for="hasAirResistance">Air resistance?</label>
+						<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasAirResistance">
+							Drag coefficient = <number-input v-model="initialState.dragCoefficient" />
 						</label>
 					</div>
 					<div>

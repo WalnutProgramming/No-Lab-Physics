@@ -26,6 +26,8 @@ import { getStateFromUrlHash } from "./serialization.js";
 			universalGravitationalConstant: 0.5,
 			hasPlanetGravity: true,
 			planetGravity: 0.3,
+			hasAirResistance: true,
+			dragCoefficient: -0.05,
 		};
 
 	start({ getInitialState });

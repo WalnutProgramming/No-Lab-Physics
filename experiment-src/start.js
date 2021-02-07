@@ -98,7 +98,9 @@ export default function start({
 			// 	e.applyForce(wind);
 			// }
 
-			// friction(e, -0.05);
+			if (state.hasAirResistance) {
+				friction(e, state.dragCoefficient);
+			}
 
 			e.update();
 		});
