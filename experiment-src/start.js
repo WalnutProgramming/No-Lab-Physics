@@ -18,6 +18,8 @@ import {
 import { createHashUrl, getSerializedUrl, serialize } from "./serialization.js";
 import { cloneDeep } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1PSWaO3mr3KWqgK/min/lodash-es.js";
 
+const DEBUG_DONT_PREGENERATE = false;
+
 // 60 frames per second
 const fps = 60;
 
@@ -53,12 +55,38 @@ export default function start({
 		}
 	}
 
+	function handleGravitation(state) {
+		const { allObjects } = state;
+		// loop through every pair of objects
+		for (let index1 = 0; index1 < allObjects.length; index1++) {
+			for (let index2 = index1 + 1; index2 < allObjects.length; index2++) {
+				let object1 = allObjects[index1];
+				let object2 = allObjects[index2];
+				const mass1 = object1.mass;
+				const mass2 = object2.mass;
+
+				if (!(isFinite(mass1) && isFinite(mass2))) continue;
+
+				const positionDifference = object2.loc.subt(object1.loc);
+				const r = positionDifference.magnitude();
+				const forceDirection = positionDifference.normalize();
+				
+				let gravityMagnitude = state.universalGravitationalConstant * mass1 * mass2 / r ** 2
+				gravityMagnitude = Math.min(gravityMagnitude, 1);
+				const gravity = forceDirection.mult(gravityMagnitude);
+
+				object1.applyForce(gravity);
+				object2.applyForce(gravity.mult(-1));
+			}
+		}
+	}
+
 	function update(state) {
 		//for each object in the array of them
 		state.allObjects.forEach((e) => {
-			if (e.hasGravity) {
+			if (state.hasPlanetGravity && e.hasGravity) {
 				//apply a abitrary gravity
-				let gravity = new Vector(0, 0.3);
+				let gravity = new Vector(0, state.planetGravity);
 				//gravity not based on mass so multiply it so it will be divided out later
 				gravity = gravity.mult(e.mass);
 				e.applyForce(gravity);
@@ -70,10 +98,16 @@ export default function start({
 			// 	e.applyForce(wind);
 			// }
 
-			friction(e, -0.05);
+			if (state.hasAirResistance) {
+				friction(e, state.dragCoefficient);
+			}
 
 			e.update();
 		});
+
+		if (state.hasUniversalGravitation) {
+			handleGravitation(state);
+		}
 
 		handleCollisions(state);
 	}
@@ -98,7 +132,6 @@ export default function start({
 
 	//loops "constantly" to apply forces and have objects draw themselves
 	function draw(state) {
-		// console.log(deserialize(serialize(state)))
 		canvasScope(() => {
 			ctx.fillRect(
 				0,
@@ -111,15 +144,13 @@ export default function start({
 			state.allObjects.forEach((object) => {
 				canvasScope(() => {
 					object.draw(selectedIds.includes(object.id));
-
-					if(selectedIds.includes(object.id) && shouldAllowDraggingPhysicsObjects() && !(object.vel.x == 0 && object.vel.y == 0)){
+					if (object.vel.magnitude() > 0.5) {
 						ctx.beginPath()
 						let pos = coordToPixels(object.loc)
 						let velo = coordToPixels(object.vel)
 						canvas_arrow(ctx,pos.x,pos.y,(pos.x+velo.x*13),(pos.y+velo.y*13))
 						ctx.strokeStyle = '#ff0000'
-      			ctx.stroke()
-						console.log(object.diameter)
+						ctx.stroke()
 					}
 				});
 			});
@@ -156,7 +187,7 @@ export default function start({
 				states.length < maxFramesToPrecalculate &&
 				Date.now() - startTime < maxTimeToPrecalculate
 			) {
-				generateNextState();
+				if (!DEBUG_DONT_PREGENERATE) generateNextState();
 			}
 		}
 	}
@@ -187,11 +218,15 @@ export default function start({
 	timeSlider.value = 0;
 	setInterval(() => {
 		maxFrameReached = Math.max(maxFrameReached, stateInd);
-		if (states.length - stateInd < 10 * fps) {
-			for (let i = 0; i < 3; i++) generateNextState();
-		}
-		while (states.length - stateInd < 0.2 * fps) {
+		if (DEBUG_DONT_PREGENERATE) {
 			generateNextState();
+		} else {
+			if (states.length - stateInd < 10 * fps) {
+				for (let i = 0; i < 3; i++) generateNextState();
+			}
+			while (states.length - stateInd < 0.2 * fps) {
+				generateNextState();
+			}
 		}
 		if (!userState.paused) {
 			stateInd++;

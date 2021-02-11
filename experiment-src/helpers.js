@@ -8,6 +8,7 @@ export function random(a, b) {
 	else return randomHelper(a, b);
 }
 
+// clamp
 export function constrain(n, low, high) {
 	return Math.max(Math.min(n, high), low);
 }

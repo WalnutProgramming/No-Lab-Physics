@@ -1,4 +1,4 @@
-import { CircleMover } from "./objects.js";
+import { BoxMover, CircleMover, PolygonMover } from "./objects.js";
 import { constrain } from "./helpers.js";
 import Vector from "./vector.js";
 
@@ -33,26 +33,8 @@ export function positionalCorrection({ a, b, normal, penetrationDepth }) {
 		.mult(Math.max(penetrationDepth - slop, 0))
 		.div(1 / a.mass + 1 / b.mass)
 		.mult(percent);
-	// TODO: put back
 	a.loc = a.loc.subt(correction.mult(1 / a.mass));
 	b.loc = b.loc.add(correction.mult(1 / b.mass));
-}
-
-// returns null if not colliding
-export function getManifold(a, b) {
-	if (a.mass === Infinity && b.mass === Infinity) return null;
-
-	const m =
-		isCircle(a) && isCircle(b)
-			? getCircleCircleManifold(a, b)
-			: isCircle(a) && !isCircle(b)
-			? getCircleBoxManifold(b, a)
-			: !isCircle(a) && isCircle(b)
-			? getCircleBoxManifold(a, b)
-			: !isCircle(a) && !isCircle(b)
-			? getBoxBoxManifold(a, b)
-			: null;
-	return m;
 }
 
 function getCircleCircleManifold(a, b) {
@@ -91,7 +73,7 @@ function nonZeroSign(n) {
 	return n < 0 ? -1 : 1;
 }
 
-function getCircleBoxManifold(aBox, bCircle) {
+function getBoxCircleManifold(aBox, bCircle) {
 	let circleLocRelative = bCircle.loc.subt(aBox.loc);
 	// closest point on box to circle center
 	let closest = circleLocRelative.clone();
@@ -136,6 +118,61 @@ function getCircleBoxManifold(aBox, bCircle) {
 	};
 }
 
+// https://forum.unity.com/threads/how-do-i-find-the-closest-point-on-a-line.340058/
+// see also: https://stackoverflow.com/questions/10983872/distance-from-a-point-to-a-polygon (didn't use)
+function nearestPointOnLineToPoint(/** @type {Vector} */ start, /** @type {Vector} */ end, /** @type {Vector} */ pnt)
+{
+    let line = end.subt(start);
+    const len = line.magnitude();
+    line = line.normalize();
+   
+    const v = pnt.subt(start);
+    let d = v.dot(line);
+    d = constrain(d, 0, len);
+    return start.add(line.mult(d));
+}
+
+function getPolygonCircleManifold(aPolygon, /** @type {CircleMover} */ bCircle) {
+	let circleLocRelative = bCircle.loc/*.subt(aPolygon.loc)*/;
+	
+	// closest point on polygon to circle center
+	let closest
+	const center = bCircle.loc
+	let minDist = Infinity;
+	aPolygon.absolutePointPairs.forEach(([p1, p2]) => {
+		const point = nearestPointOnLineToPoint(p1, p2, center);
+		const dist = point.distanceTo(center);
+		if (dist < minDist) {
+			closest = point;
+			minDist = dist;
+		}
+	})
+
+	// Is the circle inside the polygon?
+	let inside = aPolygon.containsPoint(bCircle.loc);
+
+	let normal = circleLocRelative.clone().subt(closest);
+	let d = normal.magnitudeSquared();
+	let r = bCircle.radius;
+
+	// Early out if the radius is shorter than distance to closest point and
+	// Circle not inside the box
+	if (d > r * r && !inside) return null;
+	
+	normal = normal.normalize();
+
+	// Collision normal needs to be flipped to point outside if circle was
+	// inside the box
+	if (inside) normal = normal.mult(-1);
+
+	return {
+		a: aPolygon,
+		b: bCircle,
+		normal,
+		penetrationDepth: r - Math.sqrt(d),
+	};
+}
+
 function getBoxBoxManifold(a, b) {
 	let normal = b.loc.subt(a.loc);
 
@@ -162,6 +199,35 @@ function getBoxBoxManifold(a, b) {
 	}
 }
 
+// https://stackoverflow.com/questions/40097896/javascript-polygon-collision-detection
+// https://blog.hamaluik.ca/posts/building-a-collision-engine-part-2-2d-penetration-vectors/
+// https://www.toptal.com/game/video-game-physics-part-ii-collision-detection-for-solid-objects
+function getPolygonPolygonManifold(a, b) {
+	console.error("polygon collisions aren't supported yet");
+}
+
 function isCircle(obj) {
 	return obj instanceof CircleMover;
+}
+
+const manifoldFunctions = [
+	[BoxMover, BoxMover, getBoxBoxManifold],
+	[BoxMover, CircleMover, getBoxCircleManifold],
+	[CircleMover, CircleMover, getCircleCircleManifold],
+	[PolygonMover, CircleMover, getPolygonCircleManifold],
+]
+
+// returns null if not colliding
+export function getManifold(a, b) {
+	if (a.mass === Infinity && b.mass === Infinity) return null;
+
+	for (const [c1, c2, f] of manifoldFunctions) {
+		if (a instanceof c1 && b instanceof c2) {
+			return f(a, b);
+		} else if (a instanceof c2 && b instanceof c1) {
+			return f(b, a);
+		}
+	}
+
+	return null;
 }

@@ -3,8 +3,8 @@ import {
 	ref,
 	watch,
 	computed,
-} from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
-import { CircleMover } from "./objects.js";
+} from "https://unpkg.com/vue@3.0.5/dist/vue.esm-browser.prod.js";
+import { CircleMover, PolygonMover, RampMover } from "./objects.js";
 import {
 	classes,
 	clone,
@@ -16,6 +16,7 @@ import start from "./start.js";
 import walls from "./walls.js";
 import { nanoid } from "https://unpkg.com/nanoid@3.1.20/nanoid.js";
 import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1PSWaO3mr3KWqgK/min/lodash-es.js";
+import Vector from "./vector.js";
 
 (async () => {
 	const creationOptions = ref({
@@ -24,7 +25,18 @@ import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1P
 		},
 	});
 	const initialState = ref({
-		allObjects: [...walls(), new CircleMover()],
+		allObjects: [
+			...walls(),
+			// new PolygonMover({ absolutePoints: [new Vector(100, 500), new Vector(100, 600), new Vector(600, 600)] }),
+			new RampMover({ loc: new Vector(300, 540) }),
+			new CircleMover(),
+		],
+		hasUniversalGravitation: false,
+		universalGravitationalConstant: 0.5,
+		hasPlanetGravity: true,
+		planetGravity: 0.3,
+		hasAirResistance: true,
+		dragCoefficient: -0.05,
 	});
 	const selectedObjectId = ref();
 	if (initialState.value.allObjects.length > 0) {
@@ -61,6 +73,7 @@ import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1P
 			const isObjectSelected = computed(() => selectedObjectIndex.value !== -1);
 
 			return {
+				initialState,
 				creationOptions,
 				initialState,
 				addObject,
@@ -94,6 +107,30 @@ import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1P
 						v-if="isObjectSelected"
 						v-model="initialState.allObjects[selectedObjectIndex]"
 					/>
+				</div>
+				<h2 style="margin-bottom: 0.5rem">Global Settings</h2>
+				<div style="display: flex; flex-direction: column; gap: 1rem">
+					<div>
+						<input v-model="initialState.hasPlanetGravity" id="planetGravity" type="checkbox" />
+						<label for="planetGravity">Global downward gravity?</label>
+						<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasPlanetGravity">
+							g = <number-input v-model="initialState.planetGravity" />
+						</label>
+					</div>
+					<div>
+						<input v-model="initialState.hasAirResistance" id="hasAirResistance" type="checkbox" />
+						<label for="hasAirResistance">Air resistance?</label>
+						<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasAirResistance">
+							Drag coefficient = <number-input v-model="initialState.dragCoefficient" />
+						</label>
+					</div>
+					<div>
+						<input v-model="initialState.hasUniversalGravitation" id="globalGravity" type="checkbox" />
+						<label for="globalGravity">Gravity between objects?</label>
+						<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasUniversalGravitation">
+							G = <number-input v-model="initialState.universalGravitationalConstant" />
+						</label>
+					</div>
 				</div>
 			</form>
 		`,
@@ -136,6 +173,7 @@ import { throttle } from "https://cdn.skypack.dev/pin/lodash-es@v4.17.20-OGqVe1P
 						<select v-model="className">
 							<option value="CircleMover">Circle</option>
 							<option value="BoxMover">Rectangle</option>
+							<option value="RampMover">Ramp</option>
 						</select>
 					</label>
 					<p v-if="modelValue.loc != null">Initial Position: <vector-form v-model="modelValue.loc" /> </p>
