@@ -113,18 +113,21 @@ export default function start({
 	}
 
 	//function to ease creation of arrows in the draw state for selected item's vectors
-	function canvas_arrow(context, fromx, fromy, tox, toy) {
-	  var headlen = 10; // length of head in pixels
-	  var dx = tox - fromx;
-	  var dy = toy - fromy;
-	  var angle = Math.atan2(dy, dx);
-	  context.moveTo(fromx, fromy);
-	  context.lineTo(tox-1, toy-1);
-	  context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
-	  context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
-	  context.lineTo(tox,toy);
-	  context.fillStyle = "red"
-	  context.fill();
+	function canvas_arrow(ctx, fromx, fromy, tox, toy) {
+	  let headlen = 20; // length of head in pixels
+	  let dx = tox - fromx;
+	  let dy = toy - fromy;
+	  let angle = Math.atan2(dy, dx);
+	  let endpointone = {x:tox - headlen * Math.cos(angle - Math.PI / 6), y:toy - headlen * Math.sin(angle - Math.PI / 6)}
+	  let endpointtwo = {x:tox - headlen * Math.cos(angle + Math.PI / 6), y:toy - headlen * Math.sin(angle + Math.PI / 6)}
+	  ctx.moveTo(fromx, fromy);
+	  ctx.lineTo(tox,toy);
+	  ctx.moveTo(endpointone.x,endpointone.y);
+	  ctx.lineTo(tox,toy);
+	  ctx.lineTo(endpointtwo.x,endpointtwo.y);
+	  ctx.lineTo(tox, toy);
+	  ctx.fillStyle = "red"
+	  ctx.fill();
 	}
 
 	//loops "constantly" to apply forces and have objects draw themselves
@@ -141,8 +144,6 @@ export default function start({
 			state.allObjects.forEach((object) => {
 				canvasScope(() => {
 					object.draw(selectedIds.includes(object.id));
-
-					// if(selectedIds.includes(object.id) && shouldAllowDraggingPhysicsObjects()){
 					if (object.vel.magnitude() > 0.5) {
 						ctx.beginPath()
 						let pos = coordToPixels(object.loc)
@@ -151,7 +152,6 @@ export default function start({
 						ctx.strokeStyle = '#ff0000'
 						ctx.stroke()
 					}
-					// }
 				});
 			});
 
