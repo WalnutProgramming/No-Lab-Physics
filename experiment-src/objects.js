@@ -29,6 +29,7 @@ export class Mover {
 		acc = new Vector(0, 0),
 		hasGravity = true,
 		id = nanoid(),
+		name = undefined,
 	}) {
 		this.mass = mass;
 		this.loc = loc;
@@ -36,6 +37,7 @@ export class Mover {
 		this.acc = acc;
 		this.hasGravity = hasGravity;
 		this.id = id;
+		this.name = name;
 	}
 
 	//divides the force by the objects mass then adds to acceleration
