@@ -388,4 +388,15 @@ export default function start({
 	window.toggleRuler = () => {
 		userState.ruler.shown = !userState.ruler.shown;
 	};
+
+	window.editExperiment = () => {
+		if (userState.paused && stateInd === 0) {
+			userState.paused = false;
+			document.getElementById('editExperiment').innerText = 'Edit';
+		} else {
+			userState.paused = true;
+			stateInd = 0;
+			document.getElementById('editExperiment').innerText = 'Play';
+		}
+	}
 }
