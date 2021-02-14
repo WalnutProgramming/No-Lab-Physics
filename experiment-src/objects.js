@@ -18,6 +18,8 @@ import { nanoid } from "https://unpkg.com/nanoid@3.1.20/nanoid.js";
 import { random } from "./helpers.js";
 import Vector from "./vector.js";
 
+const BLUE_OUTLINE_LENGTH = 7;
+
 export class Mover {
 	constructor({
 		mass = random(0.5, 3),
@@ -74,7 +76,7 @@ export class BoxMover extends Mover {
 	draw(isSelected = false) {
 		ctx.fillStyle = "rgb(255, 255, 255)";
 		ctx.strokeStyle = "blue";
-		ctx.lineWidth = distToPixels(4);
+		ctx.lineWidth = distToPixels(BLUE_OUTLINE_LENGTH);
 		rect(this.loc, this.width, this.height, { stroke: isSelected });
 	}
 
@@ -114,7 +116,7 @@ export class CircleMover extends Mover {
 		ctx.fillStyle = "rgb(255, 255, 255)";
 
 		ctx.strokeStyle = "blue";
-		ctx.lineWidth = distToPixels(6);
+		ctx.lineWidth = distToPixels(BLUE_OUTLINE_LENGTH);
 		circle(this.loc, this.radius, { stroke: isSelected });
 	}
 
@@ -215,6 +217,7 @@ export class PolygonMover extends Mover {
 		ctx.fillStyle = "rgb(255, 255, 255)";
 		ctx.fill();
 		if (isSelected) {
+			ctx.lineWidth = distToPixels(BLUE_OUTLINE_LENGTH);
 			ctx.strokeStyle = "blue";
 			ctx.stroke();
 		}
