@@ -61,7 +61,10 @@ import Vector from "./vector.js";
 				initialState.value.allObjects = initialState.value.allObjects.filter(
 					(obj) => obj.id !== id
 				);
-				selectedObjectId.value = undefined;
+				selectedObjectId.value =
+					initialState.value.allObjects[
+						initialState.value.allObjects.length - 1
+					].id;
 			}
 
 			const selectedObjectIndex = computed(() =>
@@ -72,12 +75,24 @@ import Vector from "./vector.js";
 
 			const isObjectSelected = computed(() => selectedObjectIndex.value !== -1);
 
+			function nextObject(offset) {
+				if (initialState.value.allObjects.length > 0) {
+					const len = initialState.value.allObjects.length
+					let newIndex = isObjectSelected.value 
+						? (selectedObjectIndex.value + offset) % len
+						: 0;
+					if (newIndex < 0) newIndex += len
+					selectedObjectId.value = initialState.value.allObjects[newIndex].id;
+				}
+			}
+
 			return {
 				initialState,
 				creationOptions,
 				initialState,
 				addObject,
 				removeObject,
+				nextObject,
 				selectedObjectIndex,
 				isObjectSelected,
 			};
@@ -93,6 +108,10 @@ import Vector from "./vector.js";
 				</div>
 				<button type="button" @click="addObject">+</button> -->
 				<div>
+					<div>
+						<button type="button" @click="nextObject(-1)">&lt; Previous object</button>
+						<button type="button" @click="nextObject(1)">Next object &gt;</button>
+					</div>
 					<div>
 						<button type="button" @click="addObject">Add object</button>
 					</div>
