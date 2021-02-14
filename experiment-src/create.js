@@ -4,7 +4,7 @@ import {
 	watch,
 	computed,
 } from "https://unpkg.com/vue@3.0.5/dist/vue.esm-browser.prod.js";
-import { CircleMover, PolygonMover, RampMover } from "./objects.js";
+import { CircleMover, RampMover } from "./objects.js";
 import {
 	classes,
 	clone,

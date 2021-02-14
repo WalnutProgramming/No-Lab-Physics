@@ -12,13 +12,11 @@ import {
 import {
 	coordToPixels,
 	distToPixels,
-	pixelsToCoord,
 	pixelsToDist,
 } from "./coordTransforms.js";
 import { nanoid } from "https://unpkg.com/nanoid@3.1.20/nanoid.js";
 import { random } from "./helpers.js";
 import Vector from "./vector.js";
-import serializationClassNameKey from "./serializationClassNameKey.js";
 
 export class Mover {
 	constructor({

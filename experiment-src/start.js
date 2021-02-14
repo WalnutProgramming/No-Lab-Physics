@@ -7,7 +7,7 @@ import {
 	getMousePos,
 	canvas,
 } from "./canvas.js";
-import { distToPixels, pixelsToCoord, coordToPixels } from "./coordTransforms.js";
+import { distToPixels, coordToPixels } from "./coordTransforms.js";
 import { Ruler } from "./objects.js";
 import Vector from "./vector.js";
 import {
