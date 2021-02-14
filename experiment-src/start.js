@@ -390,13 +390,7 @@ export default function start({
 	};
 
 	window.editExperiment = () => {
-		if (userState.paused && stateInd === 0) {
-			userState.paused = false;
-			document.getElementById('editExperiment').innerText = 'Edit';
-		} else {
-			userState.paused = true;
-			stateInd = 0;
-			document.getElementById('editExperiment').innerText = 'Play';
-		}
+		userState.paused = true;
+		stateInd = 0;
 	}
 }
