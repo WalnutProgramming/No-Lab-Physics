@@ -20,6 +20,17 @@ class PhysicsNavbar extends HTMLElement {
 
         li {
           display: flex;
+          justify-content: center;
+        }
+
+        ul a {
+          color: white;
+          font-size: 1.5rem;
+          text-decoration: none;
+        }
+
+        ul a:hover {
+          color: #ccc;
         }
       </style>
     `;
