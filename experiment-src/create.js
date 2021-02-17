@@ -103,7 +103,7 @@ import Vector from "./vector.js";
 			};
 		},
 		template: /* HTML */ `
-			<form>
+			<form style="padding-left: 0.5rem">
 				<!-- <tools-form v-model="creationOptions.tools" /> -->
 				<!-- <div v-for="(object, i) in initialState.allObjects" :key="object.id">
 					<button type="button" @click="removeObject(object.id)">
@@ -112,49 +112,58 @@ import Vector from "./vector.js";
 					<mover-form v-model="initialState.allObjects[i]" />
 				</div>
 				<button type="button" @click="addObject">+</button> -->
-				<div>
-					<div>{{currentObject?.name ?? ''}}&nbsp;</div>
+				<div class="control-box">
 					<div>
-						<button type="button" @click="nextObject(-1)">&lt; Previous object</button>
-						<button type="button" @click="nextObject(1)">Next object &gt;</button>
+						<div>
+							<button type="button" @click="nextObject(-1)" class="prev-next-button button">&lt; Previous object</button>
+							<button type="button" @click="nextObject(1)" class="prev-next-button button">Next object &gt;</button>
+						</div>
+						<div>
+							<button type="button" @click="addObject" class="add-object-button button">Add object</button>
+							<button
+								v-if="isObjectSelected"
+								type="button"
+								class="remove-object-button button"
+								@click="removeObject(initialState.allObjects[selectedObjectIndex].id)"
+							>
+								Remove this object
+							</button>
+						</div>
 					</div>
-					<div>
-						<button type="button" @click="addObject">Add object</button>
-					</div>
-					<button
-						v-if="isObjectSelected"
-						type="button"
-						@click="removeObject(initialState.allObjects[selectedObjectIndex].id)"
-					>
-						Remove this object
-					</button>
-					<mover-form
-						v-if="isObjectSelected"
-						v-model="initialState.allObjects[selectedObjectIndex]"
-					/>
-				</div>
-				<h2 style="margin-bottom: 0.5rem">Global Settings</h2>
-				<div style="display: flex; flex-direction: column; gap: 1rem">
-					<div>
-						<input v-model="initialState.hasPlanetGravity" id="planetGravity" type="checkbox" />
-						<label for="planetGravity">Global downward gravity?</label>
-						<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasPlanetGravity">
-							g = <number-input v-model="initialState.planetGravity" />
-						</label>
-					</div>
-					<div>
-						<input v-model="initialState.hasAirResistance" id="hasAirResistance" type="checkbox" />
-						<label for="hasAirResistance">Air resistance?</label>
-						<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasAirResistance">
-							Drag coefficient = <number-input v-model="initialState.dragCoefficient" />
-						</label>
-					</div>
-					<div>
-						<input v-model="initialState.hasUniversalGravitation" id="globalGravity" type="checkbox" />
-						<label for="globalGravity">Gravity between objects?</label>
-						<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasUniversalGravitation">
-							G = <number-input v-model="initialState.universalGravitationalConstant" />
-						</label>
+					<div class="inside-box">
+						<div class="mover-form">
+							<h2 style="margin: 0">{{currentObject?.name ?? ''}}&nbsp;</h2>
+							<mover-form
+								v-if="isObjectSelected"
+								v-model="initialState.allObjects[selectedObjectIndex]"
+							/>
+						</div>
+						<div class="global-settings">
+							<h2 style="margin-bottom: 0.5rem; margin-top: 0">Global Settings</h2>
+							<div style="display: flex; flex-direction: column; gap: 1rem">
+								<div>
+									<input v-model="initialState.hasPlanetGravity" id="planetGravity" type="checkbox" />
+									<label for="planetGravity">Global downward gravity?</label>
+									<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasPlanetGravity">
+										g = <number-input v-model="initialState.planetGravity" />
+									</label>
+								</div>
+								<div>
+									<input v-model="initialState.hasAirResistance" id="hasAirResistance" type="checkbox" />
+									<label for="hasAirResistance">Air resistance?</label>
+									<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasAirResistance">
+										Drag coefficient = <number-input v-model="initialState.dragCoefficient" />
+									</label>
+								</div>
+								<div>
+									<input v-model="initialState.hasUniversalGravitation" id="globalGravity" type="checkbox" />
+									<label for="globalGravity">Gravity between objects?</label>
+									<label style="display: block; margin-left: 1.5rem" v-show="initialState.hasUniversalGravitation">
+										G = <number-input v-model="initialState.universalGravitationalConstant" />
+									</label>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</form>
