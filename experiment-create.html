@@ -22,11 +22,25 @@
       <div style="display: flex; justify-content: center;">
         <div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
           <div style="display: flex;">
-            <button class="control-button" id="pause" onclick="pause()"><img src="./physics.icons/play.svg"></button>
-            <button class="control-button" id="restart" onclick="restart()"><img src="./physics.icons/restart.svg"></button>
-            <button class="control-button" id="ruler" onclick="toggleRuler()"><img src="./physics.icons/ruler.svg"></button>
-            <!-- <button class="control-button" id="editExperiment" onclick="editExperiment()">Edit</button> -->
-            <button class="control-button" id="copy-link"><img src="./physics.icons/copylink.svg"></button>
+            <button class="control-button" id="pause" onclick="pause()">
+              <img src="./physics.icons/play.svg">
+              <div>Play</div>
+            </button>
+            <button class="control-button" id="restart" onclick="restart()">
+              <img src="./physics.icons/restart.svg">
+              <div>Restart</div>
+            </button>
+            <button class="control-button" id="ruler" onclick="toggleRuler()">
+              <img src="./physics.icons/ruler.svg">
+              <div>Ruler</div>
+            </button>
+            <button class="control-button" id="editExperiment" onclick="editExperiment()">
+              <div>Edit</div>
+            </button>
+            <button class="control-button" id="copy-link">
+              <img src="./physics.icons/copylink.svg">
+              <div>Copy Link</div>
+            </button>
             <span id="loading-experiment" style="margin-right: 1em">Loading experiment...</span>
           </div>
           <pre id="time" style="font-weight: bold;"></pre>
