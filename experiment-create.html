@@ -1,32 +1,42 @@
 <!DOCTYPE html>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<script type="module" src="./navbar.js"></script>
+    <script type="module" src="./navbar.js"></script>
 
-<script defer src="./experiment-src/create.js" type="module"></script>
+    <script defer src="./experiment-src/create.js" type="module"></script>
 
-<link rel="stylesheet" href="./style.css">
-<link rel="stylesheet" href="./experiment-src/create.css">
+    <link rel="stylesheet" href="./styles/global.css">
+    <link rel="stylesheet" href="./styles/create.css">
+  </head>
+  <body>
+    <physics-navbar></physics-navbar>
 
-<physics-navbar></physics-navbar>
-
-<main>
-  <div style="display: flex">
-    <button id="pause" onclick="pause()">Pause/Play</button>
-    <button id="restart" onclick="restart()">Restart</button>
-    <button id="ruler" onclick="toggleRuler()">Ruler</button>
-    <button id="editExperiment" onclick="editExperiment()">Edit</button>
-    <button id="copy-link">Copy link</button>
-    <span id="loading-experiment" style="margin-right: 1em">Loading experiment...</span>
-    <pre id="time"></pre>
-    <input id="time-slider" type="range" min="0" max="1" step="any" style="width: 100%" value="0" />
-  </div>
-  <div>&nbsp;<span id="copy-link-tooltip"></span></div>
-  <div style="display: flex;">
-    <div id="put-canvas-here">
-      <canvas></canvas>
-    </div>
-    <div id="vue-app">Loading...</div>
-  </div>
-</main>
+    <main>
+      <div style="display: flex; justify-content: center; margin-top: 1em;">
+        
+      </div>
+      <div>&nbsp;<span id="copy-link-tooltip"></span></div>
+      <div style="display: flex; justify-content: center;">
+        <div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
+          <div style="display: flex;">
+            <button class="control-button" id="pause" onclick="pause()"><img src="./physics.icons/play.svg"></button>
+            <button class="control-button" id="restart" onclick="restart()"><img src="./physics.icons/restart.svg"></button>
+            <button class="control-button" id="ruler" onclick="toggleRuler()"><img src="./physics.icons/ruler.svg"></button>
+            <!-- <button class="control-button" id="editExperiment" onclick="editExperiment()">Edit</button> -->
+            <button class="control-button" id="copy-link"><img src="./physics.icons/copylink.svg"></button>
+            <span id="loading-experiment" style="margin-right: 1em">Loading experiment...</span>
+          </div>
+          <pre id="time" style="font-weight: bold;"></pre>
+          <input id="time-slider" type="range" min="0" max="1" step="any" value="0" style="width: 75%" />
+          <div id="put-canvas-here">
+            <canvas></canvas>
+          </div>
+        </div>
+        <div id="vue-app">Loading...</div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+.button {
+  color: white;
+  font-size: 14px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  min-width: 50%;
+}
+
+.prev-next-button {
+  background-color: darkblue;
+  border: 1px solid blue;
+}
+
+.add-object-button {
+  background-color: green;
+  border: 1px solid darkgreen;
+}
+
+.remove-object-button {
+  background-color: darkred;
+  border: 1px solid red;
+}
+
+.mover-form, 
+.global-settings {
+  padding: 0.7rem;
+  border: 1px solid black;
+}
+
+.mover-form {
+  padding-bottom: 2.2em;
+}
+
+#put-canvas-here {
+  height: 36.8em;
+  margin-bottom: 1em;
+}
+
+.control-button {
+  margin: 0 0.2em;
+  padding: 0.5em 1em;
+  border: solid rgb(119, 119, 240);
+  border-radius: 12px;
+  height: 3em;
+  width: 7em;
+  cursor: pointer;
+  background-color: #eee;
+  outline: none;
+  box-shadow: 0 6px #999;
+}
+
+.control-button:hover {
+  background-color: white;
+}
+
+.control-button:active {
+  box-shadow: 0 3px #666;
+  transform: translateY(4px);
+}
+
+.control-button img {
+  height: 1.5em;
+  width: 1.5em;
+}
