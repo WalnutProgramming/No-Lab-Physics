@@ -2,8 +2,7 @@ class PhysicsNavbar extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.shadowRoot.innerHTML = `/* HTML */ 
-          <!-- NOTICE ME TESTING -->
+    this.shadowRoot.innerHTML = /* HTML */`
           <nav>
             <li>
               <ul><a href="/">Home</a></ul>
