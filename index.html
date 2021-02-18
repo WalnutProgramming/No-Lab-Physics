@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/index.css">
 
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Notable&display=swap" rel="stylesheet">
+
     <script type="module" src="./navbar.js"></script>
   </head>
   <body>
@@ -17,14 +20,12 @@
         <h1>Virtual Physics Lab</h1>
 
         <div style="display: flex; align-items: center">
-          <div style="margin-right: 0.2em"><button>&lt;</button></div>
-          <div style="background-color: black; height: 20rem; width: 30rem; color: white">
-            Video placeholder
-          </div>
-          <div style="margin-left: 0.2em"><button>&gt;</button></div>
+          <div style="margin-right: 0.2em"><button class="preview-button">&lt;</button></div>
+          <iframe width="500em" height="400rem" src="https://www.youtube.com/embed/OoO5d5P0Jn4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <div style="margin-left: 0.2em"><button class="preview-button">&gt;</button></div>
         </div>
 
-        <button onclick="window.location.href = '/experiment-create.html'">Start an Experiment!</button>
+        <button onclick="window.location.href = '/experiment-create.html'" id="experiment-button">Start an Experiment!</button>
       </div>
     </main>
   </body>
