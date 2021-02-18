@@ -22,9 +22,13 @@
       <div style="display: flex; justify-content: center;">
         <div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
           <div style="display: flex;">
-            <button class="control-button" id="pause" onclick="pause()">
+            <button class="control-button" id="play" onclick="pause()" style="display: hidden">
               <img src="./physics.icons/play.svg">
-              <div>Play</div>
+              <div style="min-width: 3em">Play</div>
+            </button>
+            <button class="control-button" id="pause" onclick="pause()">
+              <img src="./physics.icons/pause.svg">
+              <div style="min-width: 3em">Pause</div>
             </button>
             <button class="control-button" id="restart" onclick="restart()">
               <img src="./physics.icons/restart.svg">

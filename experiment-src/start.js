@@ -34,6 +34,13 @@ export default function start({
 		paused: false,
 		ruler: new Ruler(),
 	};
+	function updatePlayPauseButton() {
+		const correctId = userState.paused ? "play" : "pause";
+		const otherId = userState.paused ? "pause" : "play";
+		document.getElementById(correctId).style.display = "flex";
+		document.getElementById(otherId).style.display = "none";
+	}
+	updatePlayPauseButton();
 
 	//handles collisions between objects (but not walls)
 	function handleCollisions(state) {
@@ -175,6 +182,7 @@ export default function start({
 		stateInd = 0;
 		if (shouldUnpause) {
 			userState.paused = false;
+			updatePlayPauseButton();
 		}
 		states = [getInitialState()];
 
@@ -383,6 +391,7 @@ export default function start({
 
 	window.pause = () => {
 		userState.paused = !userState.paused;
+		updatePlayPauseButton();
 	};
 
 	window.toggleRuler = () => {
@@ -391,6 +400,7 @@ export default function start({
 
 	window.editExperiment = () => {
 		userState.paused = true;
+		updatePlayPauseButton();
 		stateInd = 0;
 	}
 }
