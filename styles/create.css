@@ -37,11 +37,15 @@
   border: solid rgb(119, 119, 240);
   border-radius: 12px;
   height: 3em;
-  width: 7em;
   cursor: pointer;
   background-color: #eee;
   outline: none;
   box-shadow: 0 6px #999;
+
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  justify-content: center;
 }
 
 .control-button:hover {
