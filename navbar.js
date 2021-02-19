@@ -40,6 +40,14 @@ class PhysicsNavbar extends HTMLElement {
 				ul a:hover {
 					color: #ccc;
 				}
+
+				@media only screen and (max-width: 768px) {
+					ul a {
+						color: white;
+						font-size: 0.75rem;
+						text-decoration: none;
+					}	
+				}
 			</style>
 		`;
 	}
