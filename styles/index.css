@@ -5,10 +5,19 @@
     font-size: 1.5em; 
     color: white; 
     cursor: pointer; 
-    margin-top: 2rem;
+    margin: 2rem 0;
     border-radius: 12px;
     outline: none;
     box-shadow: 0 3px #999;
+}
+
+#experiment-button:hover {
+    background-color: rgb(59, 59, 120);
+}
+  
+#experiment-button:active {
+    box-shadow: 0 1.5px #666;
+    transform: translateY(4px);
 }
 
 h1 {
@@ -17,25 +26,55 @@ h1 {
     font-size: 40px;
 }
 
-.preview-button {
-    margin: 0 0.2em;
-    padding: 0.5em 1em;
-    border: solid rgb(119, 119, 240);
-    border-radius: 12px;
-    height: 3em;
-    cursor: pointer;
-    background-color: #eee;
-    outline: none;
-    box-shadow: 0 3px #999;
-    color: white;
-    background-color: rgb(119, 119, 240);
+.video-responsive {
+    overflow: hidden;
+    padding-bottom: 25%;
+    position: relative;
+    height: 0;
+    width: 25%;
+    margin: 0 auto;
+}
+
+.video {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+@media only screen and (max-width: 768px) {
+    h1 {
+        font-family: 'Notable', sans-serif;
+        color: rgb(119, 119, 240);
+        font-size: 20px;
+    }
+    #experiment-button {
+        background-color: rgb(119, 119, 240);
+        border: none;
+        padding: 1rem; 
+        font-size: 1em; 
+        color: white; 
+        cursor: pointer; 
+        margin: 2rem 0;
+        border-radius: 12px;
+        outline: none;
+        box-shadow: 0 3px #999;
+    }
+    .video-responsive {
+        overflow: hidden;
+        padding-bottom: 80%;
+        position: relative;
+        height: 0;
+        width: 80%;
+        margin: 0 auto;
+    }
+    
+    .video {
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+    }
   }
-  
-.preview-button:hover, #experiment-button:hover {
-    background-color: rgb(59, 59, 120);
-}
-  
-.preview-button:active, #experiment-button:active {
-    box-shadow: 0 1.5px #666;
-    transform: translateY(4px);
-}

@@ -20,13 +20,9 @@
     <main class="regular-page">
       <div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
         <h1>Virtual Physics Lab</h1>
-
-        <div style="display: flex; align-items: center">
-          <div style="margin-right: 0.2em"><button class="preview-button">&lt;</button></div>
-          <iframe width="500em" height="400rem" src="https://www.youtube.com/embed/OoO5d5P0Jn4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          <div style="margin-left: 0.2em"><button class="preview-button">&gt;</button></div>
+        <div class="video-responsive">
+          <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/OoO5d5P0Jn4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
-
         <button onclick="window.location.href = '/experiment-create.html'" id="experiment-button">Start an Experiment!</button>
       </div>
     </main>
