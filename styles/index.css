@@ -11,6 +11,15 @@
     box-shadow: 0 3px #999;
 }
 
+#experiment-button:hover {
+    background-color: rgb(59, 59, 120);
+}
+  
+#experiment-button:active {
+    box-shadow: 0 1.5px #666;
+    transform: translateY(4px);
+}
+
 h1 {
     font-family: 'Notable', sans-serif;
     color: rgb(119, 119, 240);
