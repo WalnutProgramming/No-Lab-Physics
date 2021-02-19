@@ -21,7 +21,7 @@ canvas {
   display: block;
 }
 
-html, body, main, #canvas-container-container, #put-canvas-here {
+html, body, main, #canvas-container-container {
   width: 100%; 
   height: 100%;
 }
@@ -31,12 +31,43 @@ html, body, main, #canvas-container-container, #put-canvas-here {
   justify-content: center;
 }
 
+#canvas-and-controlbar-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
+
 #put-canvas-here {
   --aspect-ratio: calc(16 / 9);
-  --width: min(90vw, 80vh * var(--aspect-ratio));
+  --controlbar-width: 25rem;
+  --canvas-min-width: 50vw;
+  --canvas-max-width: 80vw;
+  --canvas-min-height: 0vh;
+  --canvas-max-height: 80vh;
+}
+
+@media (max-width: 1100px) {
+  #canvas-and-controlbar-container {
+    flex-direction: column;
+  }
+
+  #put-canvas-here {
+    --controlbar-width: 0vw;
+  }
+}
+
+#put-canvas-here {
+  /* --width: min(90vw, 80vh * var(--aspect-ratio)); */
+  --canvas-width: clamp(
+    max(var(--canvas-min-width), var(--canvas-min-height) * var(--aspect-ratio)),
+    100vw - var(--controlbar-width),
+    min(var(--canvas-max-width), var(--canvas-max-height) * var(--aspect-ratio))
+  );
   /* --width: calc(80vh * var(--aspect-ratio)); */
-  width: var(--width);
-  height: calc(var(--width) / (16 / 9));
+  width: var(--canvas-width);
+  /* DON'T SET THE HEIGHT DIRECTLY ANYWHERE. We need to keep the same aspect ratio. */
+  height: calc(var(--canvas-width) / var(--aspect-ratio));
+  margin-bottom: 1rem;
 }
 
 main.regular-page {

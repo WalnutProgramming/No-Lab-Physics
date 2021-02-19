@@ -114,11 +114,11 @@ import Vector from "./vector.js";
 				<button type="button" @click="addObject">+</button> -->
 				<div class="control-box">
 					<div>
-						<div>
+						<div style="display: flex">
 							<button type="button" @click="nextObject(-1)" class="prev-next-button button">&lt; Previous object</button>
 							<button type="button" @click="nextObject(1)" class="prev-next-button button">Next object &gt;</button>
 						</div>
-						<div>
+						<div style="display: flex">
 							<button type="button" @click="addObject" class="add-object-button button">Add object</button>
 							<button
 								v-if="isObjectSelected"
