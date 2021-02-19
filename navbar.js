@@ -31,6 +31,10 @@ class PhysicsNavbar extends HTMLElement {
 					justify-content: center;
 				}
 
+				ul {
+					padding: 0 1rem;
+				}
+
 				ul a {
 					color: white;
 					font-size: 1.5rem;
@@ -44,7 +48,7 @@ class PhysicsNavbar extends HTMLElement {
 				@media only screen and (max-width: 768px) {
 					ul a {
 						color: white;
-						font-size: 0.75rem;
+						font-size: 0.85rem;
 						text-decoration: none;
 					}	
 				}
