@@ -115,8 +115,8 @@ import Vector from "./vector.js";
 				<div class="control-box">
 					<div>
 						<div style="display: flex">
-							<button type="button" @click="nextObject(-1)" class="prev-next-button button">&lt; Previous object</button>
-							<button type="button" @click="nextObject(1)" class="prev-next-button button">Next object &gt;</button>
+							<button type="button" @click="nextObject(-1)" id="prev" class="prev-next-button button"><span> Previous object</span></button>
+							<button type="button" @click="nextObject(1)" id="next" class="prev-next-button button"><span>Next object </span></button>
 						</div>
 						<div style="display: flex">
 							<button type="button" @click="addObject" class="add-object-button button">Add object</button>
