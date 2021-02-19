@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="./styles/global.css">
 
 <style>
-  .simulation-placeholder {
+  .top-sims {
     background-color: black;
     padding: 5rem;
     color: white;
@@ -18,24 +18,66 @@
 
 <script type="module" src="./navbar.js"></script>
 
+<script type="text/javascript">
+  function draw() {
+    var canvas = document.getElementsByClassName('sim-preview');
+    if (canvas[0].getContext) {
+      var ctx = canvas[0].getContext('2d');
+
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = 'rgb(200, 0, 0)';
+      ctx.fillRect(10, 10, 50, 50);
+
+      ctx.fillStyle = 'rgba(0, 0, 200, 0.5)';
+      ctx.fillRect(30, 30, 50, 50);
+    }
+  }
+</script>
+
 <physics-navbar></physics-navbar>
 
 <main class="regular-page">
-  <h1>Explore Simulations</h1>
-  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; column-gap: 0.5rem; row-gap: 0.5rem">
-    <div id="put-canvas-here">
-            <canvas></canvas>
-          </div>
-    <div class="simulation-placeholder">Placeholder Simulation</div>
-    <div class="simulation-placeholder">Placeholder Simulation</div>
-    <div class="simulation-placeholder">Placeholder Simulation</div>
-    <div class="simulation-placeholder">Placeholder Simulation</div>
-    <div class="simulation-placeholder">Placeholder Simulation</div>
-    <div class="simulation-placeholder">Placeholder Simulation</div>
-    <div class="simulation-placeholder">Placeholder Simulation</div>
-    <div class="simulation-placeholder">Placeholder Simulation</div>
-    <div class="simulation-placeholder">Placeholder Simulation</div>
-    <div class="simulation-placeholder">Placeholder Simulation</div>
-    <div class="simulation-placeholder">Placeholder Simulation</div>
-  </div>
+  <body onload="draw();">
+    <h1>Explore Simulations</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; column-gap: 0.5rem; row-gap: 0.5rem">
+      <div class="top-sims">
+        <canvas class="sim-preview" width='100%' height='100%'></canvas>
+      </div>
+      <div class="top-sims">
+        <canvas class="sim-preview" width='100%' height='100%'></canvas>
+      </div>
+      <div class="top-sims">
+        <canvas class="sim-preview" width='100%' height='100%'></canvas>
+      </div>
+      <div class="top-sims">
+        <canvas class="sim-preview" width='100%' height='100%'></canvas>
+      </div>
+      <div class="top-sims">
+        <canvas class="sim-preview" width='100%' height='100%'></canvas>
+      </div>
+      <div class="top-sims">
+        <canvas class="sim-preview" width='100%' height='100%'></canvas>
+      </div>
+      <div class="top-sims">
+        <canvas class="sim-preview" width='100%' height='100%'></canvas>
+      </div>
+      <div class="top-sims">
+        <canvas class="sim-preview" width='100%' height='100%'></canvas>
+      </div>
+      <div class="top-sims">
+        <canvas class="sim-preview" width='100%' height='100%'></canvas>
+      </div>
+      <div class="top-sims">
+        <canvas class="sim-preview" width='100%' height='100%'></canvas>
+      </div>
+      <div class="top-sims">
+        <canvas class="sim-preview" width='100%' height='100%'></canvas>
+      </div>
+      <div class="top-sims">
+        <canvas class="sim-preview" width='100%' height='100%'></canvas>
+      </div>
+    </div>
+  </body>
 </main>
