@@ -55,6 +55,12 @@ class PhysicsNavbar extends HTMLElement {
 						text-decoration: none;
 					}	
 				}
+
+				@media only screen and (max-width: 370px) {
+					ul {
+						padding: 0 0.5rem;
+					}
+				}
 			</style>
 		`;
 	}
