@@ -1,4 +1,4 @@
-const images = ["orbit", "ramp", "balls", "tworect", "random", "smaller"];
+const images = ["orbit", "ramp", "balls", "rectangle", "random", "smaller"];
 const links = [
 	"mQdfnRQREewP83u65edLM",
 	"j-D-D-MvwwQTxAw3TGQQG",
@@ -7,11 +7,13 @@ const links = [
 	"kRAITlQnFRaAActkidJzg",
 	"eDeWVP4aDnf-KRnXBB34f",
 ];
-const sims = document.getElementById("sims");
+const sims = document.getElementsByClassName("top-sims");
 
 for (let i = 0; i < images.length; i++) {
 	let img = document.createElement("img");
 	img.src = "./explore-img/" + images[i] + ".png";
+	img.height = (sims[i].clientHeight);
+	img.width = (sims[i].clientWidth);
 
 	let a = document.createElement("a");
 	a.href =
@@ -22,6 +24,6 @@ for (let i = 0; i < images.length; i++) {
 	let node = document.createTextNode(images[i].charAt(0).toUpperCase() + images[i].slice(1))
 	p.appendChild(node)
 
-	a.appendChild(p)
-	sims.appendChild(a);
+	sims[i].appendChild(a);
+	sims[i].appendChild(p);
 }
