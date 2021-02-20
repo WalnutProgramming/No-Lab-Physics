@@ -29,12 +29,14 @@ export default function start({
 	onObjectSelected = () => {},
 	editInitialState = () => {},
 	isCreating = false,
+	isPreview = false,
 }) {
 	let userState = {
 		paused: false,
 		ruler: new Ruler(),
 	};
 	function updatePlayPauseButton() {
+		if (isPreview) return;
 		const correctId = userState.paused ? "play" : "pause";
 		const otherId = userState.paused ? "pause" : "play";
 		document.getElementById(correctId).style.display = "flex";
@@ -147,6 +149,15 @@ export default function start({
 				distToPixels(canvasHeight())
 			);
 
+			if (isPreview) {
+				canvasScope(() => {
+					ctx.font = "30px arial";
+					ctx.fillStyle = "white";
+					ctx.textAlign = "center";
+					ctx.fillText("Click to edit!", canvas.width / 2, canvas.height / 3);
+				})
+			}
+
 			const selectedIds = getSelectedIds();
 			state.allObjects.forEach((object) => {
 				canvasScope(() => {
@@ -201,7 +212,7 @@ export default function start({
 	}
 	window.restart = resetAndRandomizeStates;
 	resetAndRandomizeStates();
-	document.getElementById("loading-experiment").innerHTML = "";
+	if (!isPreview) document.getElementById("loading-experiment").innerHTML = "";
 
 	let maxFrameReached = 1;
 	function sliderFrameLength() {
@@ -209,21 +220,68 @@ export default function start({
 		return Math.ceil((maxFrameReached + 1 * fps) / interval) * interval;
 	}
 
-	function showTime() {
-		const seconds = stateInd / 60;
-		const secondsFloored = Math.floor(seconds);
-		const secondsFlooredStr = secondsFloored.toString().padStart(3, "0");
-		const milliseconds = Math.floor((seconds % 1) * 1000);
-		const millisecondsStr = milliseconds.toString().padStart(3, "0");
-		document.getElementById(
-			"time"
-		).innerText = `${secondsFlooredStr}.${millisecondsStr}`;
+	let showTime = () => {};
+	if (!isPreview) {
+		const timeSlider = document.getElementById("time-slider");
+		timeSlider.value = 0;
+		showTime = () => {
+			const seconds = stateInd / 60;
+			const secondsFloored = Math.floor(seconds);
+			const secondsFlooredStr = secondsFloored.toString().padStart(3, "0");
+			const milliseconds = Math.floor((seconds % 1) * 1000);
+			const millisecondsStr = milliseconds.toString().padStart(3, "0");
+			document.getElementById(
+				"time"
+			).innerText = `${secondsFlooredStr}.${millisecondsStr}`;
 
-		timeSlider.value = stateInd / sliderFrameLength();
+			timeSlider.value = stateInd / sliderFrameLength();
+		}
+		timeSlider.addEventListener("input", () => {
+			stateInd = Math.floor(timeSlider.value * sliderFrameLength());
+			showTime();
+		});
+
+		document.getElementById("copy-link").addEventListener("click", async () => {
+			const copyLinkToolTip = document.getElementById("copy-link-tooltip");
+			const state = states[0];
+			let url;
+			copyLinkToolTip.textContent = "Generating URL...";
+	
+			try {
+				const res = await fetch(`/.netlify/functions/experiment-url`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: `{"state":${serialize(state)}}`,
+				});
+				const { id } = await res.json();
+				url = createHashUrl(id);
+			} catch (e) {
+				console.warn("failed to ask server for url; generating long url ", e);
+				url = getSerializedUrl(state);
+			}
+	
+			try {
+				navigator.clipboard.writeText(url);
+			} catch (e) {
+				console.error("failed to copy to clipboard: ", e);
+				copyLinkToolTip.textContent =
+					"Failed to copy. Here is the URL for you to copy manually: " + url;
+				return;
+			}
+	
+			copyLinkToolTip.textContent = "Copied!";
+			setTimeout(() => {
+				copyLinkToolTip.textContent = "";
+			}, 2000);
+		});
+	
+		window.addEventListener("hashchange", () => {
+			location.reload();
+		});
 	}
 
-	const timeSlider = document.getElementById("time-slider");
-	timeSlider.value = 0;
 	setInterval(() => {
 		maxFrameReached = Math.max(maxFrameReached, stateInd);
 		if (DEBUG_DONT_PREGENERATE) {
@@ -242,50 +300,6 @@ export default function start({
 		showTime();
 		draw(states[stateInd]);
 	}, 1000 / 60);
-	timeSlider.addEventListener("input", () => {
-		stateInd = Math.floor(timeSlider.value * sliderFrameLength());
-		showTime();
-	});
-
-	document.getElementById("copy-link").addEventListener("click", async () => {
-		const copyLinkToolTip = document.getElementById("copy-link-tooltip");
-		const state = states[0];
-		let url;
-		copyLinkToolTip.textContent = "Generating URL...";
-
-		try {
-			const res = await fetch(`/.netlify/functions/experiment-url`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: `{"state":${serialize(state)}}`,
-			});
-			const { id } = await res.json();
-			url = createHashUrl(id);
-		} catch (e) {
-			console.warn("failed to ask server for url; generating long url ", e);
-			url = getSerializedUrl(state);
-		}
-
-		try {
-			navigator.clipboard.writeText(url);
-		} catch (e) {
-			console.error("failed to copy to clipboard: ", e);
-			copyLinkToolTip.textContent =
-				"Failed to copy. Here is the URL for you to copy manually: " + url;
-			return;
-		}
-
-		copyLinkToolTip.textContent = "Copied!";
-		setTimeout(() => {
-			copyLinkToolTip.textContent = "";
-		}, 2000);
-	});
-
-	window.addEventListener("hashchange", () => {
-		location.reload();
-	});
 
 	// draw();
 

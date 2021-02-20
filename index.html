@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Notable&display=swap" rel="stylesheet">
 
     <script type="module" src="./navbar.js"></script>
+
+    <script type="module" src="./index.js" async defer></script>
   </head>
   <body>
     <physics-navbar></physics-navbar>
@@ -20,10 +22,12 @@
     <main class="regular-page">
       <div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
         <h1>Virtual Physics Lab</h1>
-        <div class="video-responsive">
-          <iframe class="video" width="560" height="315" src="https://www.youtube.com/embed/OoO5d5P0Jn4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-        <button onclick="window.location.href = '/experiment-create.html'" id="experiment-button">Start an Experiment!</button>
+        <a href="/experiment-create.html#WmrkdOqpEaWTFapNaxWD5">
+          <div id="put-canvas-here" style="--controlbar-width: 0vw; --canvas-max-height: 50vh; background-color: black;">
+            <canvas></canvas>
+          </div>
+        </a>
+        <button onclick="window.location.href = '/experiment-create.html'" id="experiment-button">Start an Experiment from Scratch!</button>
       </div>
     </main>
   </body>
