@@ -22,11 +22,7 @@
   <body>
     <physics-navbar></physics-navbar>
 
-    <main>
-      <div style="display: flex; justify-content: center; margin-top: 1em;">
-        
-      </div>
-      <div>&nbsp;<span id="copy-link-tooltip"></span></div>
+    <main style="margin-top: 2em;">
       <div id="canvas-and-controlbar-container">
         <div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
           <div style="display: flex; flex-wrap: wrap; justify-content: center;">
@@ -56,6 +52,7 @@
             </button>
             <span id="loading-experiment" style="margin-right: 1em">Loading experiment...</span>
           </div>
+          <div>&nbsp;<span id="copy-link-tooltip"></span></div>
           <pre id="time" style="font-weight: bold;"></pre>
           <input id="time-slider" type="range" min="0" max="1" step="any" value="0" style="width: 75%" />
           <div id="put-canvas-here">
