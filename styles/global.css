@@ -1,5 +1,6 @@
 * {
   box-sizing: border-box;
+  font-family: 'Comfortaa', cursive;
 }
 
 body {
@@ -62,10 +63,8 @@ canvas {
   width: var(--canvas-width);
   /* DON'T SET THE HEIGHT DIRECTLY ANYWHERE. We need to keep the same aspect ratio. */
   height: calc(var(--canvas-width) / var(--aspect-ratio));
-  margin-bottom: 1rem;
 }
 
 main {
-  padding: 2em;
-  padding-bottom: 0;
+  padding: 0 2em;
 }

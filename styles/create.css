@@ -1,14 +1,65 @@
+pre {
+  font-family: monospace;
+  margin: 0;
+  font-size: 1.5em;
+}
+
 .button {
   color: white;
   font-size: 14px;
   padding: 0.5rem 1rem;
   cursor: pointer;
   min-width: 50%;
+  font-weight: bold;
 }
 
 .prev-next-button {
   background-color: darkblue;
   border: 1px solid blue;
+  display: inline-block;
+}
+
+.prev-next-button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.2s;
+}
+
+#next span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.2s;
+}
+
+#next:hover span {
+  padding-right: 25px;
+}
+
+#next:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+#prev span:before {
+  content: '\00ab';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: -20px;
+  transition: 0.2s;
+}
+
+#prev:hover span {
+  padding-left: 25px;
+}
+
+#prev:hover span:before {
+  opacity: 1;
+  left: 0;
 }
 
 .add-object-button {
@@ -16,9 +67,17 @@
   border: 1px solid darkgreen;
 }
 
+.add-object-button:hover {
+  background-color: lightgreen;
+}
+
 .remove-object-button {
   background-color: darkred;
   border: 1px solid red;
+}
+
+.remove-object-button:hover {
+  background-color: red;
 }
 
 .mover-form, 
@@ -41,7 +100,6 @@
   background-color: #eee;
   outline: none;
   box-shadow: 0 6px #999;
-
   display: flex;
   gap: 0.5em;
   align-items: center;
@@ -60,8 +118,4 @@
 .control-button img {
   height: 1.5em;
   width: 1.5em;
-}
-
-@media only screen and (max-width: 768px) {
-
 }
