@@ -151,7 +151,7 @@ export default function start({
 
 			if (isPreview) {
 				canvasScope(() => {
-					ctx.font = "30px arial";
+					ctx.font = "30px Comfortaa";
 					ctx.fillStyle = "white";
 					ctx.textAlign = "center";
 					ctx.fillText("Click to edit!", canvas.width / 2, canvas.height / 3);
