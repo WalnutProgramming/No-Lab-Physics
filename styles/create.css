@@ -25,12 +25,12 @@
   position: absolute;
   opacity: 0;
   top: 0;
-  right: -20px;
+  right: -2em;
   transition: 0.2s;
 }
 
 #next:hover span {
-  padding-right: 25px;
+  padding-right: 1.5em;
 }
 
 #next:hover span:after {
@@ -43,17 +43,45 @@
   position: absolute;
   opacity: 0;
   top: 0;
-  left: -20px;
+  left: -2em;
   transition: 0.2s;
 }
 
 #prev:hover span {
-  padding-left: 25px;
+  padding-left: 1.5em;
 }
 
 #prev:hover span:before {
   opacity: 1;
   left: 0;
+}
+
+@media only screen and (max-width: 768px) {
+  #prev span:before {
+    content: '\00ab';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    left: -0.5em;
+    transition: 0.2s;
+  }
+  
+  #prev:hover span {
+    padding-left: 0.95em;
+  }
+
+  #next span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -0.5em;
+    transition: 0.2s;
+  }
+  
+  #next:hover span {
+    padding-right: 0.95em;
+  }
 }
 
 .add-object-button {
