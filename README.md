@@ -1,7 +1,7 @@
 # Physics-Engine-P5
 Walnut Hills Programming Club's 2021 showcase project. No Lab Physics allows students and teachers to create their own custom physics labs. 
 
-Pepo Try it here: <https://no-lab-physics.netlify.app/>.
+Try it here: <https://no-lab-physics.netlify.app/>.
 
 ## Running the project
 You can use repl.it, or you can run it locally.
