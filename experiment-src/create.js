@@ -25,12 +25,7 @@ import Vector from "./vector.js";
 		},
 	});
 	const initialState = ref({
-		allObjects: [
-			...walls(),
-			// new PolygonMover({ absolutePoints: [new Vector(100, 500), new Vector(100, 600), new Vector(600, 600)] }),
-			new RampMover({ loc: new Vector(300, 540) }),
-			new CircleMover(),
-		],
+		allObjects: [...walls()],
 		hasUniversalGravitation: false,
 		universalGravitationalConstant: 0.5,
 		hasPlanetGravity: true,
@@ -39,15 +34,16 @@ import Vector from "./vector.js";
 		dragCoefficient: -0.05,
 	});
 	const selectedObjectId = ref();
-	if (initialState.value.allObjects.length > 0) {
+
+	const stateFromUrlHash = await getStateFromUrlHash();
+	if (stateFromUrlHash != null) initialState.value = stateFromUrlHash;
+
+	if (initialState.value.allObjects.length > 4) {
 		selectedObjectId.value =
 			initialState.value.allObjects[
 				initialState.value.allObjects.length - 1
 			].id;
 	}
-
-	const stateFromUrlHash = await getStateFromUrlHash();
-	if (stateFromUrlHash != null) initialState.value = stateFromUrlHash;
 
 	createApp({
 		setup() {
