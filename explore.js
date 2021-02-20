@@ -18,5 +18,10 @@ for (let i = 0; i < images.length; i++) {
 		"https://no-lab-physics.netlify.app/experiment-create.html#" + links[i];
 	a.appendChild(img);
 
+	let p = document.createElement("p")
+	let node = document.createTextNode(images[i].charAt(0).toUpperCase() + images[i].slice(1))
+	p.appendChild(node)
+
+	a.appendChild(p)
 	sims.appendChild(a);
 }
