@@ -9,24 +9,25 @@
     <link rel="stylesheet" href="./styles/global.css">
     <link rel="stylesheet" href="./styles/index.css">
 
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Notable&display=swap" rel="stylesheet">
+
     <script type="module" src="./navbar.js"></script>
+
+    <script type="module" src="./index.js" async defer></script>
   </head>
   <body>
     <physics-navbar></physics-navbar>
 
     <main class="regular-page">
       <div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
-        <h1>Virtual Physics Lab</h1>
-
-        <div style="display: flex; align-items: center">
-          <div style="margin-right: 0.2em"><button>&lt;</button></div>
-          <div style="background-color: black; height: 20rem; width: 30rem; color: white">
-            Video placeholder
+        <h1>No Lab Physics</h1>
+        <a href="/experiment-create.html#WmrkdOqpEaWTFapNaxWD5">
+          <div id="put-canvas-here" style="--controlbar-width: 0vw; --canvas-max-height: 50vh; background-color: black;">
+            <canvas></canvas>
           </div>
-          <div style="margin-left: 0.2em"><button>&gt;</button></div>
-        </div>
-
-        <button onclick="window.location.href = '/experiment-create.html'">Start an Experiment!</button>
+        </a>
+        <button onclick="window.location.href = '/experiment-create.html'" id="experiment-button">Start Creating an Experiment from Scratch!</button>
       </div>
     </main>
   </body>

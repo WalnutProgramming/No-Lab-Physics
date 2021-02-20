@@ -31,13 +31,8 @@
   padding-bottom: 2.2em;
 }
 
-#put-canvas-here {
-  height: 36.8em;
-  margin-bottom: 1em;
-}
-
 .control-button {
-  margin: 0 0.2em;
+  margin: 0.5em 0.2em;
   padding: 0.5em 1em;
   border: solid rgb(119, 119, 240);
   border-radius: 12px;
@@ -65,4 +60,8 @@
 .control-button img {
   height: 1.5em;
   width: 1.5em;
+}
+
+@media only screen and (max-width: 768px) {
+
 }

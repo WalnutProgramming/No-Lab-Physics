@@ -1,20 +1,28 @@
 <!DOCTYPE html>
-
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
 <html>
-  <body onload="testing()" onresize="testing()">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>No Lab Physics</title>
 
     <link rel="stylesheet" href="./styles/global.css">
 
     <style>
-      .top-sims {
+      #sims {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(25rem, 100%), 1fr));
+        column-gap: 0.5rem;
+        row-gap: 0.5rem
+      }
+
+      #sims > * {
         background-color: black;
         color: white;
-        height: 16rem;
+      }
+
+      #sims img {
+        width: min(100%, 100vw);
       }
       .top-sims:hover{
         -webkit-transform: scale(0.9);
@@ -32,9 +40,10 @@
 
     <script type="module" src="./navbar.js"></script>
 
-    <script src="./experiment-src/explore.js"></script>
+    <script src="./explore.js" defer></script>
+  </head>
 
-
+  <body>
     <physics-navbar></physics-navbar>
 
     <main class="regular-page">
