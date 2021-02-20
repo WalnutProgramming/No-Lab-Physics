@@ -298,6 +298,10 @@ export default function start({
 			stateInd++;
 		}
 		showTime();
+
+		window.isFinishedLoading = true;
+		if (window.NProgress) window.NProgress.done();
+
 		draw(states[stateInd]);
 	}, 1000 / 60);
 

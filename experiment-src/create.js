@@ -36,6 +36,7 @@ import Vector from "./vector.js";
 	const selectedObjectId = ref();
 
 	const stateFromUrlHash = await getStateFromUrlHash();
+	if (window.NProgress)	window.NProgress.inc();
 	if (stateFromUrlHash != null) initialState.value = stateFromUrlHash;
 
 	if (initialState.value.allObjects.length > 4) {
