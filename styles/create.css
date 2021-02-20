@@ -1,3 +1,9 @@
+pre {
+  font-family: monospace;
+  margin: 0;
+  font-size: 1.5em;
+}
+
 .button {
   color: white;
   font-size: 14px;
