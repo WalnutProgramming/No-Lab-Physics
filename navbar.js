@@ -9,10 +9,13 @@ class PhysicsNavbar extends HTMLElement {
 						<a href="/">Home</a>
 					</ul>
 					<ul>
-						<a href="/about.html">About</a>
+						<a href="/experiment-create.html">Create</a>
 					</ul>
 					<ul>
-						<a href="/explore.html">Explore Simulations</a>
+						<a href="/explore.html">Explore</a>
+					</ul>
+					<ul>
+						<a href="/about.html">About</a>
 					</ul>
 					<ul>
 						<a href="/feedback.html">Feedback</a>
