@@ -52,14 +52,14 @@ class PhysicsNavbar extends HTMLElement {
 				@media only screen and (max-width: 768px) {
 					ul a {
 						color: white;
-						font-size: 0.85rem;
+						font-size: 0.70rem;
 						text-decoration: none;
 					}	
 				}
 
 				@media only screen and (max-width: 370px) {
 					ul {
-						padding: 0 0.5rem;
+						padding: 0 0.3rem;
 					}
 				}
 			</style>
