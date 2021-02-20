@@ -1,46 +1,48 @@
 <!DOCTYPE html>
-
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
 <html>
-  <body onload="testing()" onresize="testing()">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>No Lab Physics</title>
 
     <link rel="stylesheet" href="./styles/global.css">
 
     <style>
-      .top-sims {
+      #sims {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+        column-gap: 0.5rem;
+        row-gap: 0.5rem
+      }
+
+      /* @media (max-width: 25rem) {
+        #sims {
+          grid-template-columns: 1fr;
+        }
+      } */
+
+      #sims > * {
         background-color: black;
         color: white;
-        height: 16rem;
+      }
+
+      #sims img {
+        width: min(100%, 100vw);
       }
     </style>
 
     <script type="module" src="./navbar.js"></script>
 
-    <script src="./experiment-src/explore.js"></script>
+    <script src="./explore.js" defer></script>
+  </head>
 
-
+  <body>
     <physics-navbar></physics-navbar>
 
     <main class="regular-page">
       <h1>Explore Simulations</h1>
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; column-gap: 0.5rem; row-gap: 0.5rem">
-        <div class="top-sims">
-        </div>
-        <div class="top-sims">
-        </div>
-        <div class="top-sims">
-        </div>
-        <div class="top-sims">
-        </div>
-        <div class="top-sims">
-        </div>
-        <div class="top-sims">
-        </div>
-      </div>
+      <div id="sims"></div>
     </main>
   </body>
 </html>
