@@ -22,9 +22,9 @@
   <body>
     <physics-navbar></physics-navbar>
 
-    <main style="margin-top: 2em;">
+    <main style="padding-top: 2em;">
       <div id="canvas-and-controlbar-container">
-        <div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        <div style="display: flex; align-items: center; justify-content: center; flex-direction: column; margin-bottom: 2rem">
           <div style="display: flex; flex-wrap: wrap; justify-content: center;">
             <button class="control-button" id="play" onclick="pause()" style="display: hidden">
               <img src="./physics.icons/play.svg">
@@ -50,7 +50,7 @@
               <img src="./physics.icons/copylink.svg">
               <div>Copy Link</div>
             </button>
-            <span id="loading-experiment" style="margin-right: 1em">Loading experiment...</span>
+            <span id="loading-experiment" style="margin-right: 1em"></span>
           </div>
           <div>&nbsp;<span id="copy-link-tooltip"></span></div>
           <pre id="time" style="font-weight: bold;"></pre>
@@ -59,7 +59,7 @@
             <canvas></canvas>
           </div>
         </div>
-        <div id="vue-app">Loading...</div>
+        <div id="vue-app" style="width: 100%">Loading...</div>
       </div>
     </main>
   </body>
