@@ -62,7 +62,7 @@ pre {
   left: 0;
 }
 
-@media only screen and (max-width: 768px) {
+/* @media only screen and (max-width: 768px) { */
   .prev-next-button span {
     font-family: Arial;
   }
@@ -92,7 +92,7 @@ pre {
   #next:hover span {
     padding-right: 0.95em;
   }
-}
+/* } */
 
 .add-object-button {
   background-color: green;
