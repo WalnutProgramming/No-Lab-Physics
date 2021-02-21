@@ -3,29 +3,17 @@
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>No Lab Physics</title>
-
-    <link rel="stylesheet" href="./styles/global.css">
-
+    
+    <link rel="stylesheet" href="./styles/global.css">1
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&display=swap" rel="stylesheet">4
+    
     <style>
-      #sims {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(min(25rem, 100%), 1fr));
-        column-gap: 0.5rem;
-        row-gap: 0.5rem
-      }
-
-      #sims > * {
+      .top-sims {
         background-color: black;
         color: white;
-      }
-
-      #sims img {
-        width: min(100%, 100vw);
+        height: 16rem;
       }
       .top-sims:hover{
         -webkit-transform: scale(0.9);
@@ -40,31 +28,19 @@
         color: #000;
       }
     </style>
-
     <script type="module" src="./navbar.js"></script>
-
     <script src="./explore.js" defer></script>
   </head>
-
   <body>
     <physics-navbar></physics-navbar>
-
-    <main class="regular-page">
       <h1>Explore Simulations</h1>
       <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; column-gap: 0.5rem; row-gap: 2.5rem">
-        <div class="top-sims">
-        </div>
-        <div class="top-sims">
-        </div>
-        <div class="top-sims">
-        </div>
-        <div class="top-sims">
-        </div>
-        <div class="top-sims">
-        </div>
-        <div class="top-sims">
-        </div>
+        <div class="top-sims"></div>
+        <div class="top-sims"></div>
+        <div class="top-sims"></div>
+        <div class="top-sims"></div>
+        <div class="top-sims"></div>
+        <div class="top-sims"></div>
       </div>
-    </main>
   </body>
 </html>
