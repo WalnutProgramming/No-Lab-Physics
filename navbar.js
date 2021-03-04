@@ -4,23 +4,23 @@ class PhysicsNavbar extends HTMLElement {
 		this.attachShadow({ mode: "open" });
 		this.shadowRoot.innerHTML = /* HTML */ `
 			<nav>
-				<li>
-					<ul>
+				<ul>
+					<li>
 						<a href="/">Home</a>
-					</ul>
-					<ul>
+					</li>
+					<li>
 						<a href="/experiment-create.html">Create</a>
-					</ul>
-					<ul>
+					</li>
+					<li>
 						<a href="/explore.html">Explore</a>
-					</ul>
-					<ul>
+					</li>
+					<li>
 						<a href="/about.html">About</a>
-					</ul>
-					<ul>
+					</li>
+					<li>
 						<a href="/feedback.html">Feedback</a>
-					</ul>
-				</li>
+					</li>
+				</ul>
 			</nav>
 
 			<!-- styles are scoped to the navbar -->
@@ -29,28 +29,33 @@ class PhysicsNavbar extends HTMLElement {
 					background-color: rgb(119, 119, 240);
 				}
 
-				li {
+				ul {
 					display: flex;
 					justify-content: center;
+					list-style: none;
+					margin: 0;
+					padding: 0;
 				}
 
-				ul {
-					padding: 0 1rem;
+				li {
+					/* padding: 1rem 1rem; */
 				}
 
-				ul a {
+				li a {
 					color: white;
 					font-size: 1.5rem;
 					text-decoration: none;
 					font-family: 'Comfortaa', cursive;
+					display: block;
+					padding: 1rem 1rem;
 				}
 
-				ul a:hover {
-					color: #ccc;
+				li a:hover {
+					background-color: rgb(107, 107, 227);
 				}
 
 				@media only screen and (max-width: 768px) {
-					ul a {
+					li a {
 						color: white;
 						font-size: 0.70rem;
 						text-decoration: none;
@@ -58,7 +63,7 @@ class PhysicsNavbar extends HTMLElement {
 				}
 
 				@media only screen and (max-width: 370px) {
-					ul {
+					li {
 						padding: 0 0.3rem;
 					}
 				}
